@@ -54,7 +54,7 @@ class Navbar
 		
 
               <li '; if($this->activetab == 0) { echo 'class="active"';}  echo'>
-                <a href="./index.html">All</a>
+                <a href="./home.php">All</a>
               </li>
               <li '; if($this->activetab == 1) { echo 'class="active"';}  echo'>
                 <a href="./getting-started.html">Profile</a>
@@ -103,7 +103,7 @@ class Navbar
 			  </li>
 			 
 			  <li class="" style="position: relative; top: -5px;">
-			    <a class="btn btn-small" href="#">Logout</a>
+			    <a class="btn btn-small" href="scripts/LogoutScript.php">Logout</a>
 			  </li>
 			 
 			 </ul>

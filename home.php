@@ -106,6 +106,28 @@ include ("scripts/Navbar.php");
 
    <div class="span6 offset2">
    
+    <div class="span6">
+   <div class="card">
+   <div class="card-body">
+   <form>
+  <fieldset>
+  
+  <legend>Status</legend>
+    
+    <textarea rows="4" cols="50" style = "width: 95%; resize: none;" name="status" placeholder="Share whats on your mind" required></textarea>
+    <select requried name="location">
+	<option>Global Post</option>
+	<option>My Circle</option>
+	<option>Test Circle</option>
+	</select>
+	<br>
+    <button type="submit" class="btn">Submit</button>
+  </fieldset>
+</form>
+   </div>
+   </div>
+   </div>
+   
 	<?php
 	
 	$postgen = new PostGenerator($id,-1);

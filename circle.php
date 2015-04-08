@@ -10,6 +10,7 @@ error_reporting(-1);
 include("scripts/SessionManager.php");
 include ("scripts/DBcon.php");
 include ("scripts/PostGenerator.php");
+include ("scripts/CardGenerator.php");
 include ("scripts/Navbar.php");
 
 	$sessionManager = SessionManager::getManager();
@@ -154,15 +155,50 @@ include ("scripts/Navbar.php");
 
 <div class="container" style = "position: relative; top: 20px;">
 
-   <div class="span6 offset2">
+
+
+   <div class="span8 offset2">
    
-	<?php
+    <div style="position: relative; left:5%;" class="bs-example bs-example-tabs" role="tabpanel" data-example-id="togglable-tabs">
+    <ul id="myTab" class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">Posts</a></li>
+      <li role="presentation"><a href="#profile" role="tab" id="profile-tab" data-toggle="tab" aria-controls="profile">Members</a></li>
+
+    </ul>
+    <div id="myTabContent" class="tab-content">
+      <div role="tabpanel" class="tab-pane fade in active" id="home" aria-labelledBy="home-tab" style = "overflow: visible;">
+	  
+	  
+	  
+	  <?php
 	
 	$postgen = new PostGenerator($id,$pageid);
 	$postgen->echoPosts();
 	
 	
 	?>
+
+
+      </div>
+      <div role="tabpanel" class="tab-pane fade" id="profile" aria-labelledBy="profile-tab">
+	  
+	  	
+	<?php
+		$cardgen = new CardGenerator($id);
+		$cardgen->generateForCircle($circleid);
+		?>
+		
+		
+	
+		
+      </div>
+
+    </div>
+  </div><!-- /example -->
+   
+
+   
+	
    
    
 
@@ -186,7 +222,7 @@ include ("scripts/Navbar.php");
 
    </div>
 
-</div>
+
 
 
 

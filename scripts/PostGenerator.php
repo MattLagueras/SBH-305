@@ -79,6 +79,7 @@ class PostGenerator
 					   <div class="card-body">
 						  <p>'.$row['contenttext'].'
 						  </p>
+						  <span style="color: #6d84b4; font-size: 12.5px; opacity: .5%"><a href="#">Like</a></span>
 					   </div>
 
 					   <div class="card-comments">
@@ -173,8 +174,9 @@ class PostGenerator
 						  </div>
 					   </div>
 					   <div class="card-body">
-						  <p>'.$row['contenttext'].'
+						  <p>'.$row['contenttext'].'					
 						  </p>
+						  <span style="color: #6d84b4; font-size: 12.5px; opacity: .5%"><a href="#">Like</a></span>
 					   </div>
 
 					   <div class="card-comments">
