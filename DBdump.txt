@@ -1,0 +1,563 @@
+-- MySQL dump 10.13  Distrib 5.6.21, for Win64 (x86_64)
+--
+-- Host: localhost    Database: socialnetwork
+-- ------------------------------------------------------
+-- Server version	5.6.21
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `account`
+--
+
+DROP TABLE IF EXISTS `account`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `account` (
+  `idaccount` int(11) NOT NULL AUTO_INCREMENT,
+  `customer_idcustomer` int(11) NOT NULL,
+  `creditcardnum` varchar(16) DEFAULT NULL,
+  `accountcdate` date DEFAULT NULL,
+  PRIMARY KEY (`idaccount`),
+  KEY `fk_account_customer1_idx` (`customer_idcustomer`),
+  CONSTRAINT `fk_account_customer1` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=90010113 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `account`
+--
+
+LOCK TABLES `account` WRITE;
+/*!40000 ALTER TABLE `account` DISABLE KEYS */;
+INSERT INTO `account` VALUES (90010101,100100101,'4123132454456550','2011-10-04'),(90010102,100100102,'1221344356657880','2011-10-04'),(90010103,100100103,'9889677645543220','2011-10-04'),(90010104,100100104,'1221655609907660','2011-10-04'),(90010105,100100105,'1221322334434550','2011-10-05'),(90010106,100100106,'9889877867764550','2011-10-05'),(90010107,100100107,'3443566576678770','2011-10-06'),(90010108,100100108,'1221122132232330','2011-10-06'),(90010109,100100109,'1234432145544550','2011-10-06'),(90010110,100100110,'2345543289000980','2011-10-06'),(90010111,100100101,'2345543282424980','2011-10-07'),(90010112,100100102,'2345543289003440','2011-10-07');
+/*!40000 ALTER TABLE `account` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `advertisement`
+--
+
+DROP TABLE IF EXISTS `advertisement`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `advertisement` (
+  `idadvertisement` int(11) NOT NULL AUTO_INCREMENT,
+  `date` varchar(45) DEFAULT NULL,
+  `company` varchar(45) DEFAULT NULL,
+  `itemname` varchar(45) DEFAULT NULL,
+  `content` longtext,
+  `unitprice` decimal(10,0) DEFAULT NULL,
+  `unitsleft` int(11) DEFAULT NULL,
+  `repfkey` int(11) NOT NULL,
+  `typefkey` int(11) NOT NULL,
+  PRIMARY KEY (`idadvertisement`),
+  KEY `fk_advertisement_customerrep1_idx` (`repfkey`),
+  KEY `fk_advertisement_type1_idx` (`typefkey`),
+  CONSTRAINT `fk_advertisement_customerrep1` FOREIGN KEY (`repfkey`) REFERENCES `customerrep` (`idcustomerrep`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_advertisement_type1` FOREIGN KEY (`typefkey`) REFERENCES `type` (`idtype`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=33335 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `advertisement`
+--
+
+LOCK TABLES `advertisement` WRITE;
+/*!40000 ALTER TABLE `advertisement` DISABLE KEYS */;
+INSERT INTO `advertisement` VALUES (33331,'2011-10-04','Ford','2012-Mustang','Ford Mustang! First 10 cutomers get a 10%Discount!',22000,30,111221,1),(33332,'2011-10-04','GAP','Superman Shirt','Just $5!!!!!!!',5,100,111222,2),(33333,'2011-10-04','GAP','Pac-Man Shirt','Waka Waka!!',7,100,111222,2),(33334,'2011-10-04','Allstate','Quality Car Insurance','Special Deal!! Get full coverage on any automobile for $1000 this year!',1000,5,111222,3);
+/*!40000 ALTER TABLE `advertisement` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `circle`
+--
+
+DROP TABLE IF EXISTS `circle`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `circle` (
+  `idcircle` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(15) DEFAULT NULL,
+  `type` varchar(15) DEFAULT NULL,
+  `customer_idcustomer` int(11) NOT NULL,
+  PRIMARY KEY (`idcircle`),
+  KEY `fk_circle_customer1_idx` (`customer_idcustomer`),
+  CONSTRAINT `fk_circle_customer1` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=8007 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `circle`
+--
+
+LOCK TABLES `circle` WRITE;
+/*!40000 ALTER TABLE `circle` DISABLE KEYS */;
+INSERT INTO `circle` VALUES (8001,'My Friends','Friends',100100101),(8002,'Best Friends','Friends',100100102),(8003,'StonyBrookGang','Friends',100100105),(8004,'CSJunkies','Group',100100107),(8005,'Norris Family','Family',100100109),(8006,'Microsoft Group','Company',100100106);
+/*!40000 ALTER TABLE `circle` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `circlemembers`
+--
+
+DROP TABLE IF EXISTS `circlemembers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `circlemembers` (
+  `idcircle` int(11) NOT NULL,
+  `customer_idcustomer` int(11) NOT NULL,
+  PRIMARY KEY (`idcircle`,`customer_idcustomer`),
+  KEY `fk_circlemembers_customer1_idx` (`customer_idcustomer`),
+  CONSTRAINT `fk_circle` FOREIGN KEY (`idcircle`) REFERENCES `circle` (`idcircle`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_circlemembers_customer1` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `circlemembers`
+--
+
+LOCK TABLES `circlemembers` WRITE;
+/*!40000 ALTER TABLE `circlemembers` DISABLE KEYS */;
+INSERT INTO `circlemembers` VALUES (8001,100100101),(8002,100100101),(8001,100100102),(8002,100100102),(8001,100100103),(8004,100100103),(8001,100100104),(8004,100100104),(8003,100100105),(8005,100100105),(8003,100100106),(8006,100100106),(8004,100100107),(8006,100100107),(8005,100100108),(8006,100100108),(8005,100100109),(8006,100100109),(8002,100100110),(8005,100100110);
+/*!40000 ALTER TABLE `circlemembers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `comment`
+--
+
+DROP TABLE IF EXISTS `comment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `comment` (
+  `idcomment` int(11) NOT NULL AUTO_INCREMENT,
+  `content` longtext NOT NULL,
+  `fkpost` int(11) NOT NULL,
+  `customer_idcustomer` int(11) NOT NULL,
+  `date` datetime(1) DEFAULT NULL,
+  PRIMARY KEY (`idcomment`),
+  KEY `fk_comment_post_idx` (`fkpost`),
+  KEY `fk_comment_customer1_idx` (`customer_idcustomer`),
+  CONSTRAINT `fk_comment_customer1` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_comment_post` FOREIGN KEY (`fkpost`) REFERENCES `posts` (`idposts`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=900007 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `comment`
+--
+
+LOCK TABLES `comment` WRITE;
+/*!40000 ALTER TABLE `comment` DISABLE KEYS */;
+INSERT INTO `comment` VALUES (900001,'Its beautiful! :)',20111,100100101,'2011-10-10 00:00:00.0'),(900002,'Nature\'s white blanket :D',20111,100100107,'2011-10-10 00:00:00.0'),(900003,'GO! GO! GO!',20112,100100104,'2011-10-11 00:00:00.0'),(900004,'we totally owned them!',20112,100100103,'2011-10-11 00:00:00.0'),(900005,'we won! We won!',20112,100100102,'2011-10-12 00:00:00.0'),(900006,'Congrats!',20114,100100109,'2011-10-12 00:00:00.0');
+/*!40000 ALTER TABLE `comment` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `commenthaslike`
+--
+
+DROP TABLE IF EXISTS `commenthaslike`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `commenthaslike` (
+  `comment_idcomment` int(11) NOT NULL,
+  `customer_idcustomer` int(11) NOT NULL,
+  PRIMARY KEY (`comment_idcomment`,`customer_idcustomer`),
+  KEY `fk_commenthaslike_comment1_idx` (`comment_idcomment`),
+  KEY `fk_commenthaslike_customer1_idx` (`customer_idcustomer`),
+  CONSTRAINT `fk_commenthaslike_comment1` FOREIGN KEY (`comment_idcomment`) REFERENCES `comment` (`idcomment`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_commenthaslike_customer1` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `commenthaslike`
+--
+
+LOCK TABLES `commenthaslike` WRITE;
+/*!40000 ALTER TABLE `commenthaslike` DISABLE KEYS */;
+INSERT INTO `commenthaslike` VALUES (900002,100100101),(900002,100100102),(900002,100100103),(900002,100100104),(900004,100100106),(900004,100100107),(900004,100100108);
+/*!40000 ALTER TABLE `commenthaslike` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `customer`
+--
+
+DROP TABLE IF EXISTS `customer`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `customer` (
+  `idcustomer` int(11) NOT NULL AUTO_INCREMENT,
+  `lastname` varchar(45) DEFAULT NULL,
+  `firstname` varchar(45) DEFAULT NULL,
+  `email` varchar(45) NOT NULL,
+  `username` varchar(45) NOT NULL,
+  `password` varchar(45) NOT NULL,
+  `gender` varchar(1) DEFAULT NULL,
+  `birthdate` date DEFAULT NULL,
+  `address` varchar(45) DEFAULT NULL,
+  `city` varchar(45) DEFAULT NULL,
+  `state` varchar(2) DEFAULT NULL,
+  `zip` varchar(6) DEFAULT NULL,
+  PRIMARY KEY (`idcustomer`),
+  UNIQUE KEY `email_UNIQUE` (`email`),
+  UNIQUE KEY `username_UNIQUE` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=100100111 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `customer`
+--
+
+LOCK TABLES `customer` WRITE;
+/*!40000 ALTER TABLE `customer` DISABLE KEYS */;
+INSERT INTO `customer` VALUES (100100101,'McKeeny','Alice','alice@blah.com','amckeeny','password','F','1988-10-10','Chapin Apt 2010,Health Drive','Stony Brook','NY','11790'),(100100102,'Wonderwall','Bob','bob@blah.com','bwonderwall','password','M','1988-08-06','21 MajorApt,Oak St.','NewYork','NY','11700'),(100100103,'Roth','Elisa','elisa@blah.com','relisa','password','F','1992-10-11','43 Corvette Apt, Maple St','Stony Brook','NY','11790'),(100100104,'Mcdonald','Kelly','kelly@blah.com','kmcdonald','password','F','1991-11-11','54 East Apt,Oak St','NewYork','NY','11700'),(100100105,'Stanley','Wendy','wendy@blah.com','wstanley','password','F','1992-08-08','21 MajorApt,Oak St.','Stony Brook','NY','11790'),(100100106,'Ritchie','Dennis','den@blah.com','dritchie','password','M','1992-03-02','43 Corvette Apt, Maple St','NewYork','NY','11700'),(100100107,'Norris','Patrick','patnor@blahblah.com','pnorris','password','M','1992-07-08','Chapin Apt 1001,Health Drive','Stony Brook','NY','11790'),(100100108,'Stewart','Chuck','chuck@blah.com','cstewart','password','M','1992-01-02','54 East Apt,Oak St','NewYork','NY','11700'),(100100109,'Norton','Brad','brad@blah.com','bnorton','password','M','1992-01-09','Chapin Apt 2010,Health Drive','Stony Brook','NY','11790'),(100100110,'Buffet','Jeniffer','jennycool123@blah.com','jbuffet','password','F','1989-01-08','Chapin Apt 1223,Health Drive','NewYork','NY','11700');
+/*!40000 ALTER TABLE `customer` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `customerrep`
+--
+
+DROP TABLE IF EXISTS `customerrep`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `customerrep` (
+  `idcustomerrep` int(11) NOT NULL AUTO_INCREMENT,
+  `ssn` varchar(9) NOT NULL,
+  `firstname` varchar(45) DEFAULT NULL,
+  `lastname` varchar(45) DEFAULT NULL,
+  `address` varchar(45) DEFAULT NULL,
+  `city` varchar(45) DEFAULT NULL,
+  `state` varchar(45) DEFAULT NULL,
+  `zip` varchar(5) DEFAULT NULL,
+  `telephone` varchar(10) DEFAULT NULL,
+  `startdate` date DEFAULT NULL,
+  `hourlyrate` decimal(2,0) DEFAULT NULL,
+  PRIMARY KEY (`idcustomerrep`),
+  UNIQUE KEY `ssn_UNIQUE` (`ssn`)
+) ENGINE=InnoDB AUTO_INCREMENT=111223 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `customerrep`
+--
+
+LOCK TABLES `customerrep` WRITE;
+/*!40000 ALTER TABLE `customerrep` DISABLE KEYS */;
+INSERT INTO `customerrep` VALUES (111221,'111222333','Mike','Thomas','43 Apple Apt,Maple Street','Stony Brook','NY','11790','6314648998','2011-10-04',20),(111222,'111333222','Jonthan','Klaus','76 PotterApt,Muriel Avenue','Stony Brook','NY','11790','6314651232','2011-05-05',20);
+/*!40000 ALTER TABLE `customerrep` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `haspreference`
+--
+
+DROP TABLE IF EXISTS `haspreference`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `haspreference` (
+  `customer_idcustomer` int(11) NOT NULL,
+  `type_idtype` int(11) NOT NULL,
+  PRIMARY KEY (`customer_idcustomer`,`type_idtype`),
+  KEY `fk_haspreference_type1_idx` (`type_idtype`),
+  CONSTRAINT `fk_haspreference_customer1` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_haspreference_type1` FOREIGN KEY (`type_idtype`) REFERENCES `type` (`idtype`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `haspreference`
+--
+
+LOCK TABLES `haspreference` WRITE;
+/*!40000 ALTER TABLE `haspreference` DISABLE KEYS */;
+INSERT INTO `haspreference` VALUES (100100101,1);
+/*!40000 ALTER TABLE `haspreference` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `invitedtocircle`
+--
+
+DROP TABLE IF EXISTS `invitedtocircle`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `invitedtocircle` (
+  `customer_idcustomer` int(11) NOT NULL,
+  `circle_idcircle` int(11) NOT NULL,
+  PRIMARY KEY (`customer_idcustomer`,`circle_idcircle`),
+  KEY `fk_invitedtocircle_customer1_idx` (`customer_idcustomer`),
+  KEY `fk_invitedtocircle_circle1_idx` (`circle_idcircle`),
+  CONSTRAINT `fk_invitedtocircle_circle1` FOREIGN KEY (`circle_idcircle`) REFERENCES `circle` (`idcircle`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_invitedtocircle_customer1` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `invitedtocircle`
+--
+
+LOCK TABLES `invitedtocircle` WRITE;
+/*!40000 ALTER TABLE `invitedtocircle` DISABLE KEYS */;
+/*!40000 ALTER TABLE `invitedtocircle` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `manager`
+--
+
+DROP TABLE IF EXISTS `manager`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `manager` (
+  `idmanager` int(11) NOT NULL AUTO_INCREMENT,
+  `ssn` varchar(9) NOT NULL,
+  `firstname` varchar(45) DEFAULT NULL,
+  `lastname` varchar(45) DEFAULT NULL,
+  `address` varchar(45) DEFAULT NULL,
+  `city` varchar(45) DEFAULT NULL,
+  `state` varchar(45) DEFAULT NULL,
+  `zip` varchar(5) DEFAULT NULL,
+  `telephone` varchar(10) DEFAULT NULL,
+  `startdate` date DEFAULT NULL,
+  `hourlyrate` decimal(2,0) DEFAULT NULL,
+  PRIMARY KEY (`idmanager`),
+  UNIQUE KEY `ssn_UNIQUE` (`ssn`)
+) ENGINE=InnoDB AUTO_INCREMENT=111221 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `manager`
+--
+
+LOCK TABLES `manager` WRITE;
+/*!40000 ALTER TABLE `manager` DISABLE KEYS */;
+INSERT INTO `manager` VALUES (111220,'111444111','Scott','Thomas','11 Oak St,Mart Avenue','Stony Brook','ny','11790','4312345432','2011-05-01',35);
+/*!40000 ALTER TABLE `manager` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `message`
+--
+
+DROP TABLE IF EXISTS `message`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `message` (
+  `idmessage` int(11) NOT NULL,
+  `content` longtext,
+  `customer_to` int(11) NOT NULL,
+  `customer_from` int(11) NOT NULL,
+  `date` datetime(1) DEFAULT NULL,
+  `subject` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`idmessage`),
+  KEY `fk_message_customer1_idx` (`customer_to`),
+  KEY `fk_message_customer2_idx` (`customer_from`),
+  CONSTRAINT `fk_message_customer1` FOREIGN KEY (`customer_to`) REFERENCES `customer` (`idcustomer`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_message_customer2` FOREIGN KEY (`customer_from`) REFERENCES `customer` (`idcustomer`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `message`
+--
+
+LOCK TABLES `message` WRITE;
+/*!40000 ALTER TABLE `message` DISABLE KEYS */;
+INSERT INTO `message` VALUES (3001,'Hey! Do u have assignent 1 questions?',100100102,100100101,'2011-10-10 00:00:00.0','hey!'),(3002,'nope? I think patrick has them.',100100101,100100102,'2011-10-10 00:00:00.0','re: hey!'),(3003,'hey u there! Have an amazing and super duper bday! Don?t miss me too much :D',100100104,100100103,'2011-11-11 00:00:00.0','happy bday!'),(3004,'Hey! I am sorry I wont make it to tonights appointment.Stuck with some work! :(',100100105,100100105,'2011-10-11 00:00:00.0','will be late');
+/*!40000 ALTER TABLE `message` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `pages`
+--
+
+DROP TABLE IF EXISTS `pages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pages` (
+  `idpage` int(11) NOT NULL,
+  `fkcircle` int(11) NOT NULL,
+  PRIMARY KEY (`idpage`,`fkcircle`),
+  KEY `fk_circle_key_idx` (`fkcircle`),
+  CONSTRAINT `fk_circle_key` FOREIGN KEY (`fkcircle`) REFERENCES `circle` (`idcircle`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pages`
+--
+
+LOCK TABLES `pages` WRITE;
+/*!40000 ALTER TABLE `pages` DISABLE KEYS */;
+INSERT INTO `pages` VALUES (6900,8001),(6901,8002),(6904,8003),(6905,8004),(6908,8005),(6910,8006);
+/*!40000 ALTER TABLE `pages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `posthaslike`
+--
+
+DROP TABLE IF EXISTS `posthaslike`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `posthaslike` (
+  `idpost` int(11) NOT NULL,
+  `customer_idcustomer` int(11) NOT NULL,
+  PRIMARY KEY (`idpost`,`customer_idcustomer`),
+  KEY `fk_posthaslike_customer1_idx` (`customer_idcustomer`),
+  CONSTRAINT `fk_like_post` FOREIGN KEY (`idpost`) REFERENCES `posts` (`idposts`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_posthaslike_customer1` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `posthaslike`
+--
+
+LOCK TABLES `posthaslike` WRITE;
+/*!40000 ALTER TABLE `posthaslike` DISABLE KEYS */;
+INSERT INTO `posthaslike` VALUES (20111,100100101),(20112,100100101),(20111,100100102),(20112,100100102),(20114,100100102),(20111,100100103),(20112,100100103),(20111,100100104),(20112,100100104),(20112,100100105),(20113,100100105),(20114,100100106),(20112,100100107),(20112,100100108),(20112,100100109);
+/*!40000 ALTER TABLE `posthaslike` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `posts`
+--
+
+DROP TABLE IF EXISTS `posts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `posts` (
+  `idposts` int(11) NOT NULL AUTO_INCREMENT,
+  `date` datetime DEFAULT NULL,
+  `contenttext` longtext,
+  `fkpage` int(11) DEFAULT NULL,
+  `customer_idcustomer` int(11) NOT NULL,
+  `visibletoall` char(1) NOT NULL DEFAULT 'F',
+  `image` longtext,
+  PRIMARY KEY (`idposts`),
+  KEY `fk_post_page_idx` (`fkpage`),
+  KEY `fk_posts_customer1_idx` (`customer_idcustomer`),
+  CONSTRAINT `fk_post_page` FOREIGN KEY (`fkpage`) REFERENCES `pages` (`idpage`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_posts_customer1` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=20118 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `posts`
+--
+
+LOCK TABLES `posts` WRITE;
+/*!40000 ALTER TABLE `posts` DISABLE KEYS */;
+INSERT INTO `posts` VALUES (20111,'2011-10-10 00:00:00','Its Snowing! :D',6904,100100105,'F',NULL),(20112,'2011-10-11 00:00:00','GO Seawolves!!!!',6910,100100106,'F',NULL),(20113,'2011-10-11 22:13:00','Arrgh!I hate facebook!',6900,100100103,'F',NULL),(20114,'2011-10-12 00:00:00','MackBook Finally!!!',6900,100100104,'F',NULL),(20115,'2011-10-11 00:00:00','ritchie RIP :(',6905,100100104,'F',NULL),(20116,'2011-10-10 00:00:00','test global post',NULL,100100101,'T',NULL),(20117,'2011-10-10 17:33:00','Yay midterms over!',6901,100100102,'F',NULL);
+/*!40000 ALTER TABLE `posts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `requestjoincircle`
+--
+
+DROP TABLE IF EXISTS `requestjoincircle`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `requestjoincircle` (
+  `customer_idcustomer` int(11) NOT NULL,
+  `circle_idcircle` int(11) NOT NULL,
+  PRIMARY KEY (`customer_idcustomer`,`circle_idcircle`),
+  KEY `fk_requestjoincircle_customer1_idx` (`customer_idcustomer`),
+  KEY `fk_requestjoincircle_circle1_idx` (`circle_idcircle`),
+  CONSTRAINT `fk_requestjoincircle_circle1` FOREIGN KEY (`circle_idcircle`) REFERENCES `circle` (`idcircle`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_requestjoincircle_customer1` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `requestjoincircle`
+--
+
+LOCK TABLES `requestjoincircle` WRITE;
+/*!40000 ALTER TABLE `requestjoincircle` DISABLE KEYS */;
+/*!40000 ALTER TABLE `requestjoincircle` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `transaction`
+--
+
+DROP TABLE IF EXISTS `transaction`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `transaction` (
+  `idtransaction` int(11) NOT NULL AUTO_INCREMENT,
+  `timestamp` datetime(1) DEFAULT NULL,
+  `amtpurchased` int(11) DEFAULT NULL,
+  `accountfkey` int(11) NOT NULL,
+  `advertisementfkey` int(11) NOT NULL,
+  PRIMARY KEY (`idtransaction`),
+  KEY `fk_transaction_account1_idx` (`accountfkey`),
+  KEY `fk_transaction_advertisement1_idx` (`advertisementfkey`),
+  CONSTRAINT `fk_transaction_account1` FOREIGN KEY (`accountfkey`) REFERENCES `account` (`idaccount`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_transaction_advertisement1` FOREIGN KEY (`advertisementfkey`) REFERENCES `advertisement` (`idadvertisement`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=200010005 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `transaction`
+--
+
+LOCK TABLES `transaction` WRITE;
+/*!40000 ALTER TABLE `transaction` DISABLE KEYS */;
+INSERT INTO `transaction` VALUES (200010001,'2011-04-22 17:07:00.0',1,90010101,33331),(200010002,'2011-04-22 17:17:00.0',2,90010101,33332),(200010003,'2011-04-22 17:37:00.0',4,90010102,33332),(200010004,'2011-04-22 17:49:00.0',2,90010103,33332);
+/*!40000 ALTER TABLE `transaction` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `type`
+--
+
+DROP TABLE IF EXISTS `type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `type` (
+  `idtype` int(11) NOT NULL,
+  `content` varchar(45) NOT NULL,
+  PRIMARY KEY (`idtype`),
+  UNIQUE KEY `content_UNIQUE` (`content`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `type`
+--
+
+LOCK TABLES `type` WRITE;
+/*!40000 ALTER TABLE `type` DISABLE KEYS */;
+INSERT INTO `type` VALUES (1,'Car'),(2,'Clothing'),(3,'Insurance');
+/*!40000 ALTER TABLE `type` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2015-04-07 23:43:06
