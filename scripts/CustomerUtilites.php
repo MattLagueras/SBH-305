@@ -2,7 +2,7 @@
 
 
 
-class PostGenerator
+class CustomerUtilites
 {
 	private $pageid;
 	private $uid;
@@ -13,6 +13,137 @@ class PostGenerator
         $this->uid = $uid;
 		$this->pageid = $pageid;
     }
+	
+	function setPage($pageid)
+	{
+		$this->pageid = $pageid;
+	}
+	
+	
+	function getCirclesOfCustomer()
+	{
+	include ("DBcon.php");
+	
+	$query =  mysqli_prepare($mysqli,"SELECT c.* FROM circle c
+										 INNER JOIN circlemembers
+										 ON circlemembers.idcircle = c.idcircle
+										 INNER JOIN customer
+										 ON customer.idcustomer = circlemembers.customer_idcustomer
+										 WHERE customer.idcustomer = ?");
+
+			mysqli_stmt_bind_param($query,"i", $this->uid);
+			mysqli_stmt_execute($query);
+			$result = $query->get_result();
+			
+			$circlearray = array();
+			
+			while($row = $result->fetch_assoc())
+			{
+				array_push($circlearray,$row);
+			}
+			
+			return $circlearray;
+
+	}
+	
+	function generateCardsForCircle($idcircle)
+	{
+		include ("DBcon.php");
+		
+		$query =  mysqli_prepare($mysqli,"SELECT * FROM customer
+										  INNER JOIN circlemembers 
+										  ON circlemembers.customer_idcustomer = customer.idcustomer
+										  WHERE
+										  circlemembers.idcircle = ?"); 
+		
+	
+		
+			mysqli_stmt_bind_param($query,"i", $idcircle);
+			mysqli_stmt_execute($query);
+			$result = $query->get_result();
+			
+			$count = 0;
+			
+			while($row = $result->fetch_assoc())
+			{
+				$style = "";
+			
+				if($count > 0 && $count % 4 == 0)
+				{
+					$style="style='margin-left:0px;'";
+				}
+				else
+				{
+					$style="";
+				}
+				
+			
+				echo '<div class="card people" '.$style.'>
+			   <div class="card-top green">
+				  <a href="#">
+					 <img src="assets/img/silhouette_homer.png" alt=""/>
+				  </a>
+			   </div>
+			   <div class="card-info">
+				  <a class="title" href="#">'.$row['firstname'].' '.$row['lastname'].'</a>
+				  <div class="desc">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+			   </div>
+			   <div class="card-bottom">
+				  <button class="btn btn-small">Message</button>
+			   </div>
+			</div>';
+			
+			$count++;
+			
+			}
+		
+		
+		
+					
+		
+	}
+	
+	function generatePostMaker()
+	{
+				 echo '<div class="card">
+		   <div class="card-body">
+		   <form>
+		  <fieldset>
+		  
+		  <legend>Status</legend>
+			
+			<textarea rows="4" cols="50" style = "width: 95%; resize: none;" name="status" placeholder="Share whats on your mind" required></textarea>
+			<select requried name="location">';
+		
+			
+			$circles = getCirclesOfCustomer();
+			
+			$count = count($circles);
+			
+			for($i = 0; $i < $count; $i++)
+			{
+			echo '<option value='.$circles[$i]['idcircle'].'>'.$circles[$i]['name'].'</option>';
+			}
+			
+			
+			
+			echo '
+			</select>
+			<br>
+			<button type="submit" class="btn">Submit</button>
+		  </fieldset>
+		</form>
+		   </div>
+		   </div>';
+	
+	
+	
+	}
+	
+	function generateCardById($id)
+	{
+		//include ("DBcon.php");
+	}
 
 	function echoPosts()
 	{

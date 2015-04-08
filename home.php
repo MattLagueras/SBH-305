@@ -8,7 +8,7 @@ error_reporting(-1);
 
 include("scripts/SessionManager.php");
 include ("scripts/DBcon.php");
-include ("scripts/PostGenerator.php");
+include ("scripts/CustomerUtilites.php");
 include ("scripts/Navbar.php");
 
 
@@ -23,6 +23,8 @@ include ("scripts/Navbar.php");
 		$statuscode = 403;
 		header('Location: ' . $url, true, $statusCode);
 	}
+	
+	$utilites = new CustomerUtilites($id,-1);
 
 ?>
 
@@ -65,19 +67,7 @@ include ("scripts/Navbar.php");
                     <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
                                    <link rel="shortcut icon" href="assets/ico/favicon.png">
 
-      <script type="text/javascript">
-
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-3182578-9']);
-        _gaq.push(['_trackPageview']);
-
-        (function() {
-          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-
-      </script>
+ 
   </head>
 
 <body data-spy="scroll" data-target=".bs-docs-sidebar">
@@ -116,9 +106,21 @@ include ("scripts/Navbar.php");
     
     <textarea rows="4" cols="50" style = "width: 95%; resize: none;" name="status" placeholder="Share whats on your mind" required></textarea>
     <select requried name="location">
-	<option>Global Post</option>
-	<option>My Circle</option>
-	<option>Test Circle</option>
+	
+	<?php
+	
+	$circles = $utilites->getCirclesOfCustomer();
+	
+	$count = count($circles);
+	
+	for($i = 0; $i < $count; $i++)
+	{
+	echo '<option value='.$circles[$i]['idcircle'].'>'.$circles[$i]['name'].'</option>';
+	}
+	
+	
+	?>
+	
 	</select>
 	<br>
     <button type="submit" class="btn">Submit</button>
@@ -130,8 +132,7 @@ include ("scripts/Navbar.php");
    
 	<?php
 	
-	$postgen = new PostGenerator($id,-1);
-	$postgen->echoPosts();
+	$utilites->echoPosts();
 	
 	
 	?>

@@ -9,8 +9,7 @@ error_reporting(-1);
 
 include("scripts/SessionManager.php");
 include ("scripts/DBcon.php");
-include ("scripts/PostGenerator.php");
-include ("scripts/CardGenerator.php");
+include ("scripts/CustomerUtilites.php");
 include ("scripts/Navbar.php");
 
 	$sessionManager = SessionManager::getManager();
@@ -111,19 +110,6 @@ include ("scripts/Navbar.php");
                     <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
                                    <link rel="shortcut icon" href="assets/ico/favicon.png">
 
-      <script type="text/javascript">
-
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-3182578-9']);
-        _gaq.push(['_trackPageview']);
-
-        (function() {
-          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-
-      </script>
   </head>
 
 <body data-spy="scroll" data-target=".bs-docs-sidebar">
@@ -172,8 +158,8 @@ include ("scripts/Navbar.php");
 	  
 	  <?php
 	
-	$postgen = new PostGenerator($id,$pageid);
-	$postgen->echoPosts();
+	$utilites = new CustomerUtilites($id,$pageid);
+	$utilites->echoPosts();
 	
 	
 	?>
@@ -184,9 +170,8 @@ include ("scripts/Navbar.php");
 	  
 	  	
 	<?php
-		$cardgen = new CardGenerator($id);
-		$cardgen->generateForCircle($circleid);
-		?>
+		$utilites->generateCardsForCircle($circleid);
+	?>
 		
 		
 	
