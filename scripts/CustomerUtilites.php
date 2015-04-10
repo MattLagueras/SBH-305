@@ -1,17 +1,23 @@
 <?php
 
 
+include_once ("DBcon.php");
+include_once("SessionManager.php");
+include_once("PreparedQueryHelper.php");
 
 class CustomerUtilites
 {
 	private $pageid;
 	private $uid;
+	private $queryhelper;
+	
 
 
 	function __construct($uid, $pageid) 
 	{           
         $this->uid = $uid;
 		$this->pageid = $pageid;
+		$this->queryhelper = new PreparedQueryHelper();
     }
 	
 	function setPage($pageid)
@@ -22,18 +28,25 @@ class CustomerUtilites
 	
 	function getCirclesOfCustomer()
 	{
-	include ("DBcon.php");
 	
-	$query =  mysqli_prepare($mysqli,"SELECT c.* FROM circle c
+	
+	$con = DBcon::getDBcon();
+	$mysqli = $con->getMysqliObject();
+	
+	$params = array("i",$this->uid);
+	
+	$this->queryhelper->beginTransaction($mysqli);
+	$result = $this->queryhelper->executeStatement($mysqli,"SELECT c.* FROM circle c
 										 INNER JOIN circlemembers
 										 ON circlemembers.idcircle = c.idcircle
 										 INNER JOIN customer
 										 ON customer.idcustomer = circlemembers.customer_idcustomer
-										 WHERE customer.idcustomer = ?");
+										 WHERE customer.idcustomer = ?",$params);
+										 
+	$this->queryhelper->commitTransaction($mysqli);
 
-			mysqli_stmt_bind_param($query,"i", $this->uid);
-			mysqli_stmt_execute($query);
-			$result = $query->get_result();
+			
+			
 			
 			$circlearray = array();
 			
@@ -48,20 +61,24 @@ class CustomerUtilites
 	
 	function generateCardsForCircle($idcircle)
 	{
-		include ("DBcon.php");
-		
-		$query =  mysqli_prepare($mysqli,"SELECT * FROM customer
+			$con = DBcon::getDBcon();
+	$mysqli = $con->getMysqliObject();
+	
+	
+	$params = array("i",$idcircle);
+	
+	$this->queryhelper->beginTransaction($mysqli);
+	$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM customer
 										  INNER JOIN circlemembers 
 										  ON circlemembers.customer_idcustomer = customer.idcustomer
 										  WHERE
-										  circlemembers.idcircle = ?"); 
+										  circlemembers.idcircle = ?",$params);
+										 
+	$this->queryhelper->commitTransaction($mysqli);
 		
-	
 		
-			mysqli_stmt_bind_param($query,"i", $idcircle);
-			mysqli_stmt_execute($query);
-			$result = $query->get_result();
 			
+
 			$count = 0;
 			
 			while($row = $result->fetch_assoc())
@@ -116,7 +133,7 @@ class CustomerUtilites
 			<select requried name="location">';
 		
 			
-			$circles = getCirclesOfCustomer();
+			$circles = $this->getCirclesOfCustomer();
 			
 			$count = count($circles);
 			
@@ -140,6 +157,21 @@ class CustomerUtilites
 	
 	}
 	
+	function getCustomerRowById($id)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+	
+			$params = array("i", $id);
+	
+			$this->queryhelper->beginTransaction($mysqli);
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM customer WHERE idcustomer = ?",$params);
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result->fetch_assoc();
+			
+	}
+	
 	function generateCardById($id)
 	{
 		//include ("DBcon.php");
@@ -147,15 +179,21 @@ class CustomerUtilites
 
 	function echoPosts()
 	{
-		include ("DBcon.php");
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
 		
 		date_default_timezone_set('America/New_York');
+		
+		$result;
 		
 		if($this->pageid == -1)
 		{
 		
-			$query =  mysqli_prepare($mysqli,"
-			SELECT p.*, customer.lastname, customer.firstname FROM posts p
+			
+			$params = array("ii", $this->uid, $this->uid);
+	
+			$this->queryhelper->beginTransaction($mysqli);
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT p.*, customer.lastname, customer.firstname FROM posts p
 			INNER JOIN customer
 			ON customer.idcustomer = p.customer_idcustomer
 			WHERE 
@@ -176,24 +214,48 @@ class CustomerUtilites
 			(
 			SELECT cm3.idcircle FROM circlemembers cm3
 			WHERE cm3.customer_idcustomer = ?
-			)))
-			");
+			)))",$params);
 			
-			mysqli_stmt_bind_param($query,"ii", $this->uid, $this->uid);
-			mysqli_stmt_execute($query);
-			$result = $query->get_result();
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			
+		}
+		else
+		{
+		
+			$params = array("i", $this->pageid);
+	
+			$this->queryhelper->beginTransaction($mysqli);
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT p.*, customer.lastname, customer.firstname FROM posts p
+																	INNER JOIN customer
+																	ON customer.idcustomer = p.customer_idcustomer
+																	WHERE 
+																	p.fkpage = ?",$params);
+										 
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			
+			
+		}
+			
+			
+			
+			
 			
 			while($row = $result->fetch_assoc())
 			{
 				if($row['image'] == NULL)
 				{
-					   $query2 = mysqli_prepare($mysqli,"SELECT c.*, customer.lastname, customer.firstname FROM comment c
+					   $params = array("i",$row['idposts']);
+	
+					   $this->queryhelper->beginTransaction($mysqli);
+					   $result2 = $this->queryhelper->executeStatement($mysqli,"SELECT c.*, customer.lastname, customer.firstname FROM comment c
 														 INNER JOIN customer
-														 ON customer.idcustomer = c.customer_idcustomer WHERE c.fkpost = ?");
-					   mysqli_stmt_bind_param($query2,"i",$row['idposts']);
-					   mysqli_stmt_execute($query2);
-					   
-					   $result2 = $query2->get_result();
+														 ON customer.idcustomer = c.customer_idcustomer WHERE c.fkpost = ?",$params);
+										 
+					   $this->queryhelper->commitTransaction($mysqli);
+				
+					  
 					
 					   $commentcount = mysqli_num_rows($result2);
 				
@@ -209,13 +271,74 @@ class CustomerUtilites
 					   </div>
 					   <div class="card-body">
 						  <p>'.$row['contenttext'].'
-						  </p>
-						  <span style="color: #6d84b4; font-size: 12.5px; opacity: .5%"><a href="#">Like</a></span>
-					   </div>
+						  </p>';
+					
+					   $params = array("ii",$row['idposts'],$this->uid);
+					   $this->queryhelper->beginTransaction($mysqli);
+					   $result3 = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM posthaslike WHERE idpost = ? AND customer_idcustomer = ?",$params);								 
+					   $this->queryhelper->commitTransaction($mysqli);
+					   
+					   if(mysqli_num_rows($result3) > 0)
+					   {
+						echo '
+						  <span role="button" style="color: #6d84b4; font-size: 12.5px; opacity: .5%" class="like-button" ><a href="#" id="post'.$row['idposts'].'">Unlike</a></span></div>';
+					   }
+					   else
+					   {
+							echo '
+						  <span role="button" style="color: #6d84b4; font-size: 12.5px; opacity: .5%" class="like-button" ><a href="#" id="post'.$row['idposts'].'">Like</a></span></div>';
+					   }
+						  
+						 
+					   echo '
+					   
+					   
 
 					   <div class="card-comments">
 						  <div class="comments-collapse-toggle">
-							 <a data-toggle="collapse" data-target="#'.$row['idposts'].'" href="#">'.$commentcount.' comments <i class="icon-angle-down"></i></a>
+						  
+						  <div style = "margin-bottom: 5px; border-bottom: 1px solid #ccc;">';				
+
+						  $params = array("i",$row['idposts']);
+						  $this->queryhelper->beginTransaction($mysqli);
+					      $likeresult = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM posthaslike WHERE idpost = ?",$params);								 
+					      $this->queryhelper->commitTransaction($mysqli);
+						  $likecount = mysqli_num_rows($likeresult);
+						  
+						  if($likecount == 0)
+						  {
+						  echo'<span>0 Likes</span>';
+						  }
+						  else if ($likecount == 1)
+						  {
+						   $lrow = $likeresult->fetch_assoc();
+						   $custrec = $this->getCustomerRowById($lrow['customer_idcustomer']);
+						   echo'<span>'.$custrec['firstname'].' '.$custrec['lastname'].' likes this</span>';
+						  }
+						  else
+						  {
+							$custlisthtml = "<p>";
+							
+							while($lrow = $likeresult->fetch_assoc())
+							{
+							
+								$custrec = $this->getCustomerRowById($lrow['customer_idcustomer']);
+								
+								$custlisthtml .= $custrec['firstname'];
+								$custlisthtml .= "&nbsp";
+								$custlisthtml .= $custrec['lastname'];
+								$custlisthtml .= "<br>";
+								
+							}
+							
+							$custlisthtml .= "</p>";
+						  
+							echo'<span class="likelist" data-toggle="popover" data-placement="top" data-original-title="" data-trigger="hover" data-html="true" data-content="'.$custlisthtml.'" >'.$likecount.' Likes</span>';
+						  }
+						  echo '
+						  </div>
+						  
+							 <a data-toggle="collapse"data-target="#'.$row['idposts'].'" href="#" class = "comment-drop">'.$commentcount.' comments <i class="icon-angle-down"></i></a>
 						  </div>
 						  ';
 						  
@@ -266,111 +389,8 @@ class CustomerUtilites
 				}
 			}
 		}	
-		else
-		{
-		
-			$query =  mysqli_prepare($mysqli,"
-			SELECT p.*, customer.lastname, customer.firstname FROM posts p
-			INNER JOIN customer
-			ON customer.idcustomer = p.customer_idcustomer
-			WHERE 
-			p.fkpage = ?");
-			
-			mysqli_stmt_bind_param($query,"i", $this->pageid);
-			mysqli_stmt_execute($query);
-			$result = $query->get_result();
-			
-			while($row = $result->fetch_assoc())
-			{
-				if($row['image'] == NULL)
-				{
-					   $query2 = mysqli_prepare($mysqli,"SELECT c.*, customer.lastname, customer.firstname FROM comment c
-														 INNER JOIN customer
-														 ON customer.idcustomer = c.customer_idcustomer WHERE c.fkpost = ?");
-					   mysqli_stmt_bind_param($query2,"i",$row['idposts']);
-					   mysqli_stmt_execute($query2);
-					   
-					   $result2 = $query2->get_result();
-					
-					   $commentcount = mysqli_num_rows($result2);
-				
-				
-						echo ' <div class="span6">
-						<div class="card">
-					   <div class="card-heading image">
-						  <img src="holder.js/46x46" alt=""/>
-						  <div class="card-heading-header">
-							 <h3>'.$row['firstname'].' '.$row['lastname'].'</h3>
-							 <span>Published at - '.date('h:i a m/d/Y', strtotime($row['date'])).'</span>
-						  </div>
-					   </div>
-					   <div class="card-body">
-						  <p>'.$row['contenttext'].'					
-						  </p>
-						  <span style="color: #6d84b4; font-size: 12.5px; opacity: .5%"><a href="#">Like</a></span>
-					   </div>
-
-					   <div class="card-comments">
-						  <div class="comments-collapse-toggle">
-							 <a data-toggle="collapse" data-target="#'.$row['idposts'].'" href="#">'.$commentcount.' comments <i class="icon-angle-down"></i></a>
-						  </div>
-						  ';
-						  
-						  if($commentcount > 0)
-						  {
-						  echo '
-						  <div id="'.$row['idposts'].'" class="comments collapse">
-						  ';
-						  
-							while($row2 = $result2->fetch_assoc())
-						    {
-							 echo '
-							 <div class="media">
-								<a class="pull-left" href="#">
-								   <img class="media-object" data-src="holder.js/28x28" alt="avatar"/>
-								</a>
-								<div class="media-body">
-								   <h4 class="media-heading">'.$row2['firstname'].' '.$row2['lastname'].'</h4>
-								   <p>'.$row2['content'].'</p>
-							  </div>
-							 </div>
-							 ';
-							}
-						  echo '	
-						  </div>
-						  ';
-						  }
-						  
-						  echo '
-						  <div class="card-comments">
-						  <form>
-						  <fieldset>			
-							<label>Leave a Comment</label>
-							<textarea rows="2" cols="50" style = "width: 100%" name="comment"></textarea>
-							<button type="submit" class="btn">Submit</button>
-						  </fieldset>
-						</form>
-						  </div>';
-						 
-						  
-					echo '	  
-					</div>
-					</div>
-					</div>';
-				}
-				else
-				{
-				
-				}
-		
-		}
 	
-	  mysqli_stmt_close($query);
-	  mysqli_stmt_close($query2);
-	  mysqli_close($mysqli);
-	
-	}
-  }
+  
 }
 
 

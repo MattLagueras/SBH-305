@@ -1,5 +1,9 @@
 <?php
 
+include_once("SessionManager.php");
+include_once ("DBcon.php");
+
+
 class Navbar
 {
 	private $uid;
@@ -17,7 +21,14 @@ class Navbar
 	function echoNav()
 	{
 		
-		include ("DBcon.php");
+		
+		
+		
+		
+		$con = DBcon::getDBcon();
+	$mysqli = $con->getMysqliObject();
+		
+		
 		
 		$query = mysqli_prepare($mysqli,"SELECT c.* FROM circle c
 										 INNER JOIN circlemembers
@@ -115,9 +126,9 @@ class Navbar
 
       </div>';
 	  
-	  mysqli_stmt_close($query);
-	  mysqli_stmt_close($query2);
-	  mysqli_close($mysqli);
+	  //mysqli_stmt_close($query);
+	 // mysqli_stmt_close($query2);
+	 // mysqli_close($mysqli);
 	
 	}
 

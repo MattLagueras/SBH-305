@@ -6,10 +6,9 @@ ini_set('display_errors',1);
 ini_set('display_startup_errors',1);
 error_reporting(-1);
 
-include("scripts/SessionManager.php");
-include ("scripts/DBcon.php");
-include ("scripts/CustomerUtilites.php");
-include ("scripts/Navbar.php");
+include_once("scripts/SessionManager.php");
+include_once ("scripts/CustomerUtilites.php");
+include_once ("scripts/Navbar.php");
 
 
 	$sessionManager = SessionManager::getManager();
@@ -66,6 +65,8 @@ include ("scripts/Navbar.php");
       <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
                     <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
                                    <link rel="shortcut icon" href="assets/ico/favicon.png">
+								   
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
  
   </head>
@@ -97,37 +98,13 @@ include ("scripts/Navbar.php");
    <div class="span6 offset2">
    
     <div class="span6">
-   <div class="card">
-   <div class="card-body">
-   <form>
-  <fieldset>
   
-  <legend>Status</legend>
-    
-    <textarea rows="4" cols="50" style = "width: 95%; resize: none;" name="status" placeholder="Share whats on your mind" required></textarea>
-    <select requried name="location">
-	
 	<?php
 	
-	$circles = $utilites->getCirclesOfCustomer();
-	
-	$count = count($circles);
-	
-	for($i = 0; $i < $count; $i++)
-	{
-	echo '<option value='.$circles[$i]['idcircle'].'>'.$circles[$i]['name'].'</option>';
-	}
-	
+	$utilites->generatePostMaker();
 	
 	?>
-	
-	</select>
-	<br>
-    <button type="submit" class="btn">Submit</button>
-  </fieldset>
-</form>
-   </div>
-   </div>
+  
    </div>
    
 	<?php
@@ -201,7 +178,7 @@ include ("scripts/Navbar.php");
     <!-- Footer
     ================================================== -->
   
-
+	
 
 
     <!-- Le javascript
@@ -235,6 +212,28 @@ include ("scripts/Navbar.php");
 			
 			e.stopPropagation();
 	});
+	
+	$('.like-button').click(function(e) {
+			e.preventDefault();
+			$(this).html('<a href="#">Unlike</a>');
+	});
+	
+	
+	$('.comment-drop').click(function(e) {
+			e.preventDefault();
+	});
+	
+	$('.likelist').hover(function(e) {
+	
+		$(this).popover('show')
+			
+	}, function(){
+	
+		$(this).popover('hide')
+   
+	 });
+	
+	
 	
 	</script>
 

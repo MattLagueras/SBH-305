@@ -4,13 +4,17 @@ ini_set('display_errors',1);
 ini_set('display_startup_errors',1);
 error_reporting(-1);
 
-include("SessionManager.php");
+include_once("SessionManager.php");
 
-include ("DBcon.php");
+include_once ("DBcon.php");
 
 
 	$sessionManager = SessionManager::getManager();
 	$sessionManager->startSession();
+	
+	
+	$con = DBcon::getDBcon();
+	$mysqli = $con->getMysqliObject();
 	
 	
 	$email = $_POST['email'];
@@ -32,14 +36,16 @@ include ("DBcon.php");
 		$sessionManager->setSessionVar("userid",$row['idcustomer']);
 		$res = array('message' => "customer");
 		echo json_encode($res);
+		$con->closeConnection();
 	}
 	else
 	{
 		$res = array('message' => "error");
 		echo json_encode($res);
+		$con->closeConnection();
 	}
 	
-	mysqli_stmt_close($query);
+	
 
 
 ?>

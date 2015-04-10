@@ -17,6 +17,9 @@ include ("scripts/Navbar.php");
 	
 	$id = $sessionManager->getSessionVar("userid");
 	
+		$con = DBcon::getDBcon();
+	$mysqli = $con->getMysqliObject();
+	
 	if($id == "invalid")
 	{
 		$url = "http://localhost/SBH/login.php";
@@ -248,6 +251,29 @@ include ("scripts/Navbar.php");
 			
 			e.stopPropagation();
 	});
+
+	
+	$('.like-button').click(function(e) {
+			e.preventDefault();
+			$(this).html('<a href="#">Unlike</a>');
+	});
+	
+	
+	$('.comment-drop').click(function(e) {
+			e.preventDefault();
+	});
+	
+	
+	
+	$('.likelist').hover(function(e) {
+	
+		$(this).popover('show')
+			
+	}, function(){
+	
+		$(this).popover('hide')
+   
+	 });
 	
 	</script>
 
