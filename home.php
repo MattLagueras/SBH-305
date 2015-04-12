@@ -208,14 +208,51 @@ include_once ("scripts/Navbar.php");
 	
 	<script>
 	
+	var script = "scripts/AjaxHandler.php";
+	
 	$("#namecircleinput").click(function(e) {
 			
 			e.stopPropagation();
 	});
 	
-	$('.like-button').click(function(e) {
+	$('.like-button-post').click(function(e) {
 			e.preventDefault();
-			$(this).html('<a href="#">Unlike</a>');
+			
+			var element = $(this);
+			
+			var action = 0;
+			var pid = $(this).children("a").attr("id");
+			var uid = <?php  echo $id;  ?>;
+			
+			var darray = new Array(action,pid,uid);
+			
+			$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					if(msg.rdata == "unliked")
+					{
+						element.html('<a href="#" id = '+pid+'>Like</a>');
+						location.reload();
+					}
+					else
+					{
+						element.html('<a href="#" id = '+pid+'>Unlike</a>');
+						location.reload();
+					}
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+			
+			
+			
 	});
 	
 	
@@ -231,6 +268,37 @@ include_once ("scripts/Navbar.php");
 	
 		$(this).popover('hide')
    
+	 });
+	 
+	 $("#makepost").submit(function(e){
+		
+		e.preventDefault();
+		
+		var action = 2;
+		var pid = $("[name='location'").val();
+		var content = $("[name='status'").val();
+		var uid = <?php  echo $id;  ?>;
+		
+		var darray = new Array(action,pid,content,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
+		
+	 
 	 });
 	
 	

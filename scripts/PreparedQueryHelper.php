@@ -34,12 +34,14 @@ class PreparedQueryHelper
 	
 	function beginTransaction($mysqli)
 	{
+		mysqli_autocommit($mysqli,FALSE);
 		mysqli_begin_transaction($mysqli);
 	}
 	
 	function commitTransaction($mysqli)
 	{
 		mysqli_commit($mysqli);
+		mysqli_autocommit($mysqli,TRUE);
 	}
 	
 	function abortTransaction($mysqli)

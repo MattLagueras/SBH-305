@@ -5,6 +5,7 @@ include_once ("DBcon.php");
 include_once("SessionManager.php");
 include_once("PreparedQueryHelper.php");
 
+
 class CustomerUtilites
 {
 	private $pageid;
@@ -59,9 +60,96 @@ class CustomerUtilites
 
 	}
 	
+	function createPost($circleid,$content)
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+	
+		date_default_timezone_set('America/New_York');
+		$date = date('Y-m-d H:i:s', time());
+	
+		if($circleid == "g")
+		{
+			
+		
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$p1 = array("ss","socialnetwork","posts");
+			$res1 = $this->queryhelper->executeStatement($mysqli,"SELECT AUTO_INCREMENT
+																FROM information_schema.TABLES
+																WHERE TABLE_SCHEMA = ?
+																AND TABLE_NAME = ? ",$p1);
+			$res1 = $res1->fetch_assoc();
+			$key = $res1["AUTO_INCREMENT"];		
+
+			
+			$params = array("issis",$key,$date,$content,$this->uid,"T");
+			$postresult = $this->queryhelper->executeStatement($mysqli,"INSERT INTO posts (idposts, date, contenttext, customer_idcustomer, visibletoall) VALUES (?,?,?,?,?)",$params);
+			$this->queryhelper->commitTransaction($mysqli);	
+
+			return  $postresult;
+		}
+		else
+		{
+	
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$p1 = array("ss","socialnetwork","posts");
+			$res1 = $this->queryhelper->executeStatement($mysqli,"SELECT AUTO_INCREMENT
+																FROM information_schema.TABLES
+																WHERE TABLE_SCHEMA = ?
+																AND TABLE_NAME = ? ",$p1);
+			$res1 = $res1->fetch_assoc();
+			$key = $res1["AUTO_INCREMENT"];
+
+			$p1 = array("i",$circleid);
+			$res1 = $this->queryhelper->executeStatement($mysqli,"SELECT idpage FROM pages WHERE fkcircle = ? ",$p1);
+			
+			$res1 = $res1->fetch_assoc();
+			$idpage = $res1["idpage"];
+
+			
+			$params = array("issiis",$key,$date,$content,$idpage,$this->uid,"T");
+			$postresult = $this->queryhelper->executeStatement($mysqli,"INSERT INTO posts (idposts, date, contenttext, fkpage, customer_idcustomer, visibletoall) VALUES (?,?,?,?,?,?)",$params);
+			$this->queryhelper->commitTransaction($mysqli);	
+
+			return  $postresult;
+		}
+		
+
+			
+		
+	}
+	
+	function likeOrUnlikePost($postid)
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$params = array("ii",$postid,$this->uid);
+		$this->queryhelper->beginTransaction($mysqli);
+		$likeresult = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM posthaslike WHERE idpost = ? AND customer_idcustomer = ?",$params);								 
+		$likecount = mysqli_num_rows($likeresult);
+		
+		if($likecount == 0) // No rows for like so insert
+		{
+			$insertresult = $this->queryhelper->executeStatement($mysqli,"INSERT INTO posthaslike (idpost,customer_idcustomer) VALUES (?,?)",$params);
+			$this->queryhelper->commitTransaction($mysqli);
+			return "liked";
+		}
+		else
+		{
+			$deleteresult = $this->queryhelper->executeStatement($mysqli,"DELETE FROM posthaslike WHERE idpost = ? AND customer_idcustomer = ?",$params);
+			$this->queryhelper->commitTransaction($mysqli);
+			return "unliked";
+		}
+		
+		
+	}
+	
 	function generateCardsForCircle($idcircle)
 	{
-			$con = DBcon::getDBcon();
+	$con = DBcon::getDBcon();
 	$mysqli = $con->getMysqliObject();
 	
 	
@@ -124,18 +212,21 @@ class CustomerUtilites
 	{
 				 echo '<div class="card">
 		   <div class="card-body">
-		   <form>
+		   <form action = "scipts/AjaxHandler.php" id="makepost">
 		  <fieldset>
 		  
 		  <legend>Status</legend>
 			
 			<textarea rows="4" cols="50" style = "width: 95%; resize: none;" name="status" placeholder="Share whats on your mind" required></textarea>
+			<span class="help-block">Where would you like to post to?</span>
 			<select requried name="location">';
 		
 			
 			$circles = $this->getCirclesOfCustomer();
 			
 			$count = count($circles);
+			
+			echo '<option value="g" >All</option>';
 			
 			for($i = 0; $i < $count; $i++)
 			{
@@ -155,6 +246,27 @@ class CustomerUtilites
 	
 	
 	
+	}
+	
+	function generatePostMakerForCircle()
+	{
+		echo ' <div class="span6">
+		<div class="card">
+		   <div class="card-body">
+		   <form action = "scipts/AjaxHandler.php" id="makepost">
+		  <fieldset>
+		  
+		  <legend>Status</legend>
+			
+			<textarea rows="4" cols="50" style = "width: 95%; resize: none;" name="status" placeholder="Share whats on your mind" required></textarea>
+
+			<br>
+			<button type="submit" class="btn">Submit</button>
+		  </fieldset>
+		</form>
+		   </div>
+		   </div>
+		   </div>';
 	}
 	
 	function getCustomerRowById($id)
@@ -214,7 +326,7 @@ class CustomerUtilites
 			(
 			SELECT cm3.idcircle FROM circlemembers cm3
 			WHERE cm3.customer_idcustomer = ?
-			)))",$params);
+			))) ORDER BY p.date DESC",$params);
 			
 			$this->queryhelper->commitTransaction($mysqli);
 			
@@ -230,7 +342,7 @@ class CustomerUtilites
 																	INNER JOIN customer
 																	ON customer.idcustomer = p.customer_idcustomer
 																	WHERE 
-																	p.fkpage = ?",$params);
+																	p.fkpage = ? ORDER BY p.date DESC",$params);
 										 
 			$this->queryhelper->commitTransaction($mysqli);
 			
@@ -281,12 +393,12 @@ class CustomerUtilites
 					   if(mysqli_num_rows($result3) > 0)
 					   {
 						echo '
-						  <span role="button" style="color: #6d84b4; font-size: 12.5px; opacity: .5%" class="like-button" ><a href="#" id="post'.$row['idposts'].'">Unlike</a></span></div>';
+						  <span role="button" style="color: #6d84b4; font-size: 12.5px; opacity: .5%" class="like-button-post" ><a href="#" id="post'.$row['idposts'].'">Unlike</a></span></div>';
 					   }
 					   else
 					   {
 							echo '
-						  <span role="button" style="color: #6d84b4; font-size: 12.5px; opacity: .5%" class="like-button" ><a href="#" id="post'.$row['idposts'].'">Like</a></span></div>';
+						  <span role="button" style="color: #6d84b4; font-size: 12.5px; opacity: .5%" class="like-button-post" ><a href="#" id="post'.$row['idposts'].'">Like</a></span></div>';
 					   }
 						  
 						 
