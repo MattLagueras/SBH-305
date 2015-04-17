@@ -210,6 +210,7 @@ include_once ("scripts/Navbar.php");
 	
 	var script = "scripts/AjaxHandler.php";
 	
+	
 	$("#namecircleinput").click(function(e) {
 			
 			e.stopPropagation();
@@ -300,7 +301,71 @@ include_once ("scripts/Navbar.php");
 		
 	 
 	 });
+	 
+	 $('.editpost').click(function(e) {
+			e.preventDefault();
+					
+			var id = $(this).parent().parent().children().attr("id");
+			
+			var post = "post"+id+"body";
+			var content = $("#contenttext"+id).text();
+			
+			$("#"+id+"formdiv").first().show();
+			$("#contenttext"+id).hide();
+			
+			
+	 });
+	 
+	 $('.deletepost').click(function(e) {
+			e.preventDefault();
+			var id = $(this).parent().parent().children().attr("id");
+	 });
+	 
+	 
+	 
+	  $(".editpostform").submit(function(e) {
+			e.preventDefault();
+			var pid = $(e.target).parent().attr("id");
+			pid = pid.replace("formdiv","");
 	
+			var action = 3;
+			var content = $(e.target).find('textarea').val();
+			
+			var uid = <?php  echo $id;  ?>;
+			
+			var darray = new Array(action,pid,content,uid);
+			
+			$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+			
+			
+	 });
+	 
+	 
+	 
+	 
+	 function hideEditPost(idpost, selector)
+	 {
+			var ptext = $("#contenttext"+idpost).text();
+	 
+			$("#"+idpost+"formdiv").first().hide();
+			$("#"+idpost+"formdiv").find('textarea').val(ptext);
+			$("#contenttext"+idpost).show();
+			
+	 }
 	
 	
 	</script>

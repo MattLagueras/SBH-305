@@ -5,6 +5,8 @@ ACTION CODES
 0 = Like/Unlike post [0,pid,uid]
 1 = Like/Unlike comment
 2 = Make Post [2,pid,content,uid]
+3 = Edit Post [3,pid,newcontent,uid]
+
 
 */
 
@@ -40,6 +42,15 @@ include_once ("CustomerUtilites.php");
 		
 		echo json_encode(array('result' => 'success'));
 		
+	}
+	
+	if($data[0] == 3)
+	{
+		$utilites = new CustomerUtilites($data[3],-1);
+		
+		$utilites->editPost($data[1],$data[2]);
+		
+		echo json_encode(array('result' => 'success'));
 	}
 	
 

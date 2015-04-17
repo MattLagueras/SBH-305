@@ -121,6 +121,20 @@ class CustomerUtilites
 		
 	}
 	
+	function editPost($postid, $newcontent)
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		$params = array("si",$newcontent,$postid);
+		$postresult = $this->queryhelper->executeStatement($mysqli,"UPDATE posts SET contenttext = ? WHERE idposts = ?",$params);
+		$this->queryhelper->commitTransaction($mysqli);	
+		
+		return $postresult;
+		
+	}
+	
 	function likeOrUnlikePost($postid)
 	{
 		$con = DBcon::getDBcon();
@@ -374,16 +388,34 @@ class CustomerUtilites
 				
 						echo ' <div class="span6">
 						<div class="card">
-					   <div class="card-heading image">
+					   <div class="card-heading image">';
+					   
+					   if($row["customer_idcustomer"] == $this->uid)
+					   {
+					   echo '
+					   <div class="dropdown" style="display:inline; position: relative; float: right; top:-10px">
+					   <a id="'.$row['idposts'].'" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
+                      <ul class="dropdown-menu" role="menu" aria-labelledby="'.$row['idposts'].'">
+                        <li role="presentation" class="editpost"><a role="menuitem" tabindex="-1" href="#">Edit</a></li>
+                        <li role="presentation" class="deletepost"><a role="menuitem" tabindex="-1" href="#">Delete</a></li>         
+                      </ul>
+						</div>';
+					   }
+					   echo'
 						  <img src="holder.js/46x46" alt=""/>
 						  <div class="card-heading-header">
-							 <h3>'.$row['firstname'].' '.$row['lastname'].'</h3>
+							 <h3>'.$row['firstname'].' '.$row['lastname'].' </h3>
 							 <span>Published at - '.date('h:i a m/d/Y', strtotime($row['date'])).'</span>
 						  </div>
 					   </div>
-					   <div class="card-body">
-						  <p>'.$row['contenttext'].'
-						  </p>';
+					   <div class="card-body" id="post'.$row['idposts'].'body">';
+					   
+					   if($row["customer_idcustomer"] == $this->uid)
+					   {
+					   echo '<div class="card-body" id = "'.$row['idposts'].'formdiv" style="display: none"> <form class="editpostform"><fieldset><textarea rows="4" cols="50" style = "width: 95%; resize: none;" name="editstatus" required>'.$row['contenttext'].'</textarea><button type="submit" class="btn-primary">Submit</button><button type="button" onclick="hideEditPost('.$row['idposts'].',post'.$row['idposts'].'body)" class="btn-warning">Cancel</button></fieldset></form></div>';
+					   }
+						echo '
+						<p id="contenttext'.$row['idposts'].'" >'.$row['contenttext'].'</p>';
 					
 					   $params = array("ii",$row['idposts'],$this->uid);
 					   $this->queryhelper->beginTransaction($mysqli);
