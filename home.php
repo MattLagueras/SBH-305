@@ -156,8 +156,6 @@ include_once ("scripts/Navbar.php");
 </div>
 	
 	
-		
-	
 
 		
 		 
@@ -170,8 +168,41 @@ include_once ("scripts/Navbar.php");
 
 
    </div>
+   
+   		
+	<div id="deletePostModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Delete Post</h3>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to delete this?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-danger" data-dismiss="modal" id="deletepostb">Delete</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+
+  </div>
+</div>
+
+	<div id="deleteCommentModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Delete Comment</h3>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to delete this?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-danger" data-dismiss="modal" id="deletecommentb">Delete</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+
+  </div>
+</div>
 
 </div>
+
+
 
 
 
@@ -209,6 +240,8 @@ include_once ("scripts/Navbar.php");
 	<script>
 	
 	var script = "scripts/AjaxHandler.php";
+	var deletepost;
+	var deletecomment;
 	
 	
 	$("#namecircleinput").click(function(e) {
@@ -257,6 +290,46 @@ include_once ("scripts/Navbar.php");
 	});
 	
 	
+	$('.like-button-comment').click(function(e) {
+			e.preventDefault();
+			
+			var element = $(this);
+			
+			var action = 1;
+			var cid = $(this).children("a").attr("id");
+			var uid = <?php  echo $id;  ?>;
+			
+			var darray = new Array(action,cid,uid);
+			
+			$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					if(msg.rdata == "unliked")
+					{
+						location.reload();
+					}
+					else
+					{
+						location.reload();
+					}
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+			
+			
+			
+	});
+	
+	
+	
 	$('.comment-drop').click(function(e) {
 			e.preventDefault();
 	});
@@ -302,13 +375,62 @@ include_once ("scripts/Navbar.php");
 	 
 	 });
 	 
+	 $("#deletepostb").click(function(e){
+	 
+		var action = 6;
+		var uid = <?php  echo $id;  ?>;
+		var darray = new Array(action,deletepost,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+	 
+	 });
+	 
+	 $("#deletecommentb").click(function(e){
+	 
+		var action = 7;
+		var uid = <?php  echo $id;  ?>;
+		var darray = new Array(action,deletecomment,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+	 
+	 });
+	 
+	 
 	 $('.editpost').click(function(e) {
 			e.preventDefault();
 					
 			var id = $(this).parent().parent().children().attr("id");
 			
 			var post = "post"+id+"body";
-			var content = $("#contenttext"+id).text();
+			//var content = $("#contenttext"+id).text();
 			
 			$("#"+id+"formdiv").first().show();
 			$("#contenttext"+id).hide();
@@ -321,7 +443,15 @@ include_once ("scripts/Navbar.php");
 			var id = $(this).parent().parent().children().attr("id");
 	 });
 	 
+	 $(".icon-pencil.editcomment").click(function(e) {
+		
+		var id = $(this).parent().attr("id");
+			
+			
+			$("#"+id+"cformdiv").first().show();
+			$("#contenttextc"+id).hide();
 	 
+	 });
 	 
 	  $(".editpostform").submit(function(e) {
 			e.preventDefault();
@@ -355,6 +485,56 @@ include_once ("scripts/Navbar.php");
 	 });
 	 
 	 
+	 $(".editcommentform").submit(function(e) {
+			e.preventDefault();
+			var pid = $(e.target).parent().attr("id");
+			pid = pid.replace("cformdiv","");
+	
+			var action = 5;
+			var content = $(e.target).find('textarea').val();
+			
+			var uid = <?php  echo $id;  ?>;
+			
+			var darray = new Array(action,pid,content,uid);
+			
+			$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+			
+			
+	 });
+	 
+	 function setDeletePost(post)
+	 {
+		deletepost = post;
+	 }
+	 
+	 function setDeleteComment(comment)
+	 {
+		deletecomment = comment;
+	 }
+	 
+	 function hideEditComment(idcomment, selector)
+	 {
+		var ptext = $("#contenttextc"+idcomment).text();
+	 
+		$("#"+idcomment+"cformdiv").first().hide();
+		$("#"+idcomment+"cformdiv").find('textarea').val(ptext);
+		
+		$("#contenttextc"+idpost).show();
+	 }
 	 
 	 
 	 function hideEditPost(idpost, selector)
@@ -366,6 +546,56 @@ include_once ("scripts/Navbar.php");
 			$("#contenttext"+idpost).show();
 			
 	 }
+	 
+	 $(".btn-warning.closeeditcomment").click(function(e){
+	 
+		var idcomment = $(e.target).parent().parent().parent().attr("id");
+		idcomment = idcomment.replace("cformdiv","");
+		
+		var ptext = $("#contenttextc"+idcomment).text();
+	 
+		$("#"+idcomment+"cformdiv").first().hide();
+		$("#"+idcomment+"cformdiv").find('textarea').val(ptext);
+		
+		$("#contenttextc"+idcomment).show();
+	
+	 });
+	 
+	 $(".createcomment").submit(function(e){
+	 
+		e.preventDefault();
+		
+		var idpost = $(e.target).attr("id");
+		idpost = idpost.replace("cc","");
+		
+		var content = $(e.target).find('textarea').val();
+		var action = 4;
+		var uid = <?php  echo $id;  ?>;
+		
+		var darray = new Array(action,idpost,content,uid);
+		
+			
+			$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
+		
+	 
+	 });
+	 
+	 
 	
 	
 	</script>

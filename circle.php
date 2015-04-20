@@ -152,6 +152,10 @@ include ("scripts/Navbar.php");
     <ul id="myTab" class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">Posts</a></li>
       <li role="presentation"><a href="#profile" role="tab" id="profile-tab" data-toggle="tab" aria-controls="profile">Members</a></li>
+	  <li role="presentation"><a href="#invited" role="tab" id="profile-tab" data-toggle="tab" aria-controls="invited">Invited</a></li>
+	  <li role="presentation"><a href="#requests" role="tab" id="profile-tab" data-toggle="tab" aria-controls="requests">Requests</a></li>
+	  <li role="presentation"><a href="#add" role="tab" id="profile-tab" data-toggle="tab" aria-controls="add">Add</a></li>
+	  
 
     </ul>
     <div id="myTabContent" class="tab-content">
@@ -181,6 +185,37 @@ include ("scripts/Navbar.php");
 	
 		
       </div>
+	  
+	  <div role="tabpanel" class="tab-pane fade" id="invited" aria-labelledBy="profile-tab">
+	  
+	  <?php
+	  
+		echo $utilites->getInvitedCards($circleid);
+		
+	  ?>
+	  
+	  </div>
+	  
+	  <div role="tabpanel" class="tab-pane fade" id="requests" aria-labelledBy="profile-tab">
+	  </div>
+	  
+	  <div role="tabpanel" class="tab-pane fade" id="add" aria-labelledBy="profile-tab">
+	  
+	  <div class="span6">
+	  
+	  <form class="navbar-search" id="searchpeopleform">
+	  <legend>Search for People</legend>
+		<input type="text" class="search-query" placeholder="Search" name="namesearch">
+		<button type="submit" class="btn">Submit</button>
+	  </form>
+	  </div>
+	  
+	  <div class="span6" id = "searchpeople">
+	  
+	  
+	  </div>
+	  
+	  </div>
 
     </div>
   </div><!-- /example -->
@@ -199,7 +234,37 @@ include ("scripts/Navbar.php");
 		
 	
 
-		
+			<div id="deletePostModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Delete Post</h3>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to delete this?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-danger" id="deletepostb">Delete</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+
+  </div>
+</div>
+
+	<div id="deleteCommentModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Delete Comment</h3>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to delete this?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-danger"  id="deletecommentb">Delete</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+
+  </div>
+</div>
+
+</div>
 		 
 		 
 	
@@ -245,15 +310,79 @@ include ("scripts/Navbar.php");
 
     <script src="assets/js/application.js"></script>
 
-	
-	<script>
+		<script>
 	
 	var script = "scripts/AjaxHandler.php";
+	var deletepost;
+	var deletecomment;
+	
 	
 	$("#namecircleinput").click(function(e) {
 			
 			e.stopPropagation();
+			
 	});
+	
+	$('#searchpeopleform').submit(function(e) {
+	
+		e.preventDefault();
+		
+		var action = 8;
+		var name = $("[name='namesearch'").val();
+		var circleid = <?php echo $_GET['circleid']; ?>;
+		var uid = <?php  echo $id;  ?>;
+		
+		var darray = new Array(action,name,circleid,uid);
+		
+			$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					if(msg.result == "success")
+					{
+						$("#searchpeople").html(msg.html);
+					}
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
+		
+	
+	});
+	
+	function inviteToCircle(custid)
+	{
+			var circleid = <?php echo $circleid; ?>;
+		
+			var action = 9;
+			var uid = <?php  echo $id;  ?>;
+			
+			var darray = new Array(action,circleid,custid,uid);
+			
+			$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+	}
+	
 
 	
 	$('.like-button-post').click(function(e) {
@@ -297,11 +426,49 @@ include ("scripts/Navbar.php");
 	});
 	
 	
-	$('.comment-drop').click(function(e) {
+	$('.like-button-comment').click(function(e) {
 			e.preventDefault();
+			
+			var element = $(this);
+			
+			var action = 1;
+			var cid = $(this).children("a").attr("id");
+			var uid = <?php  echo $id;  ?>;
+			
+			var darray = new Array(action,cid,uid);
+			
+			$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					if(msg.rdata == "unliked")
+					{
+						location.reload();
+					}
+					else
+					{
+						location.reload();
+					}
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+			
+			
+			
 	});
 	
 	
+	
+	$('.comment-drop').click(function(e) {
+			e.preventDefault();
+	});
 	
 	$('.likelist').hover(function(e) {
 	
@@ -312,13 +479,13 @@ include ("scripts/Navbar.php");
 		$(this).popover('hide')
    
 	 });
-
-	$("#makepost").submit(function(e){
+	 
+	 $("#makepost").submit(function(e){
 		
 		e.preventDefault();
 		
 		var action = 2;
-		var pid = <?php echo $circleid; ?>;
+		var pid = <?php echo $_GET['circleid'];   ?>;
 		var content = $("[name='status'").val();
 		var uid = <?php  echo $id;  ?>;
 		
@@ -344,13 +511,62 @@ include ("scripts/Navbar.php");
 	 
 	 });
 	 
-	  $('.editpost').click(function(e) {
+	 $("#deletepostb").click(function(e){
+	 
+		var action = 6;
+		var uid = <?php  echo $id;  ?>;
+		var darray = new Array(action,deletepost,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+	 
+	 });
+	 
+	 $("#deletecommentb").click(function(e){
+	 
+		var action = 7;
+		var uid = <?php  echo $id;  ?>;
+		var darray = new Array(action,deletecomment,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+	 
+	 });
+	 
+	 
+	 $('.editpost').click(function(e) {
 			e.preventDefault();
 					
 			var id = $(this).parent().parent().children().attr("id");
 			
 			var post = "post"+id+"body";
-			var content = $("#contenttext"+id).text();
+			//var content = $("#contenttext"+id).text();
 			
 			$("#"+id+"formdiv").first().show();
 			$("#contenttext"+id).hide();
@@ -363,7 +579,15 @@ include ("scripts/Navbar.php");
 			var id = $(this).parent().parent().children().attr("id");
 	 });
 	 
+	 $(".icon-pencil.editcomment").click(function(e) {
+		
+		var id = $(this).parent().attr("id");
+			
+			
+			$("#"+id+"cformdiv").first().show();
+			$("#contenttextc"+id).hide();
 	 
+	 });
 	 
 	  $(".editpostform").submit(function(e) {
 			e.preventDefault();
@@ -397,6 +621,56 @@ include ("scripts/Navbar.php");
 	 });
 	 
 	 
+	 $(".editcommentform").submit(function(e) {
+			e.preventDefault();
+			var pid = $(e.target).parent().attr("id");
+			pid = pid.replace("cformdiv","");
+	
+			var action = 5;
+			var content = $(e.target).find('textarea').val();
+			
+			var uid = <?php  echo $id;  ?>;
+			
+			var darray = new Array(action,pid,content,uid);
+			
+			$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+			
+			
+	 });
+	 
+	 function setDeletePost(post)
+	 {
+		deletepost = post;
+	 }
+	 
+	 function setDeleteComment(comment)
+	 {
+		deletecomment = comment;
+	 }
+	 
+	 function hideEditComment(idcomment, selector)
+	 {
+		var ptext = $("#contenttextc"+idcomment).text();
+	 
+		$("#"+idcomment+"cformdiv").first().hide();
+		$("#"+idcomment+"cformdiv").find('textarea').val(ptext);
+		
+		$("#contenttextc"+idpost).show();
+	 }
 	 
 	 
 	 function hideEditPost(idpost, selector)
@@ -408,10 +682,59 @@ include ("scripts/Navbar.php");
 			$("#contenttext"+idpost).show();
 			
 	 }
-	
 	 
+	 $(".btn-warning.closeeditcomment").click(function(e){
+	 
+		var idcomment = $(e.target).parent().parent().parent().attr("id");
+		idcomment = idcomment.replace("cformdiv","");
+		
+		var ptext = $("#contenttextc"+idcomment).text();
+	 
+		$("#"+idcomment+"cformdiv").first().hide();
+		$("#"+idcomment+"cformdiv").find('textarea').val(ptext);
+		
+		$("#contenttextc"+idcomment).show();
+	
+	 });
+	 
+	 $(".createcomment").submit(function(e){
+	 
+		e.preventDefault();
+		
+		var idpost = $(e.target).attr("id");
+		idpost = idpost.replace("cc","");
+		
+		var content = $(e.target).find('textarea').val();
+		var action = 4;
+		var uid = <?php  echo $id;  ?>;
+		
+		var darray = new Array(action,idpost,content,uid);
+		
+			
+			$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
+		
+	 
+	 });
+	 
+	 
+	
+	
 	</script>
-
 
 
 
