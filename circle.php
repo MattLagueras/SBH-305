@@ -151,10 +151,18 @@ include ("scripts/Navbar.php");
     <div style="position: relative; left:5%;" class="bs-example bs-example-tabs" role="tabpanel" data-example-id="togglable-tabs">
     <ul id="myTab" class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">Posts</a></li>
-      <li role="presentation"><a href="#profile" role="tab" id="profile-tab" data-toggle="tab" aria-controls="profile">Members</a></li>
-	  <li role="presentation"><a href="#invited" role="tab" id="profile-tab" data-toggle="tab" aria-controls="invited">Invited</a></li>
-	  <li role="presentation"><a href="#requests" role="tab" id="profile-tab" data-toggle="tab" aria-controls="requests">Requests</a></li>
-	  <li role="presentation"><a href="#add" role="tab" id="profile-tab" data-toggle="tab" aria-controls="add">Add</a></li>
+      <li role="presentation"><a href="#members" role="tab" id="member-tab" data-toggle="tab" aria-controls="member-tab">Members</a></li>
+	  
+	  <?php
+	  
+	   if($isadmin == true)
+		echo '
+	  <li role="presentation"><a href="#invited" role="tab" id="invited-tab" data-toggle="tab" aria-controls="invited">Invited</a></li>
+	  <li role="presentation"><a href="#requests" role="tab" id="requests-tab" data-toggle="tab" aria-controls="requests">Requests</a></li>
+	  <li role="presentation"><a href="#add" role="tab" id="add-tab" data-toggle="tab" aria-controls="add">Add</a></li>
+	  <li role="presentation"><a href="#options" role="tab" id="options-tab" data-toggle="tab" aria-controls="options">Options</a></li>
+	  ';
+	  ?>
 	  
 
     </ul>
@@ -174,7 +182,7 @@ include ("scripts/Navbar.php");
 
 
       </div>
-      <div role="tabpanel" class="tab-pane fade" id="profile" aria-labelledBy="profile-tab">
+      <div role="tabpanel" class="tab-pane fade" id="members" aria-labelledBy="member-tab">
 	  
 	  	
 	<?php
@@ -186,20 +194,39 @@ include ("scripts/Navbar.php");
 		
       </div>
 	  
-	  <div role="tabpanel" class="tab-pane fade" id="invited" aria-labelledBy="profile-tab">
-	  
 	  <?php
+	  if($isadmin == true)
+	  {
+		echo '
+	  
+	  <div role="tabpanel" class="tab-pane fade" id="invited" aria-labelledBy="invited-tab">';
+	  
+	  
 	  
 		echo $utilites->getInvitedCards($circleid);
+	}
 		
 	  ?>
 	  
 	  </div>
 	  
-	  <div role="tabpanel" class="tab-pane fade" id="requests" aria-labelledBy="profile-tab">
-	  </div>
 	  
-	  <div role="tabpanel" class="tab-pane fade" id="add" aria-labelledBy="profile-tab">
+	  <?php
+	  if($isadmin == true)
+	  {
+		echo '
+	  <div role="tabpanel" class="tab-pane fade" id="requests" aria-labelledBy="requests-tab">
+	  </div>';
+	  }
+	  ?>
+	  
+	  
+	  
+	  <?php
+	  if($isadmin == true)
+	  {
+	  echo'
+	  <div role="tabpanel" class="tab-pane fade" id="add" aria-labelledBy="add-tab">
 	  
 	  <div class="span6">
 	  
@@ -215,7 +242,56 @@ include ("scripts/Navbar.php");
 	  
 	  </div>
 	  
+	  </div>';
+	  }
+	  ?>
+	  
+	   <?php
+	  if($isadmin == true)
+	  {
+		echo '
+	  <div role="tabpanel" class="tab-pane fade" id="options" aria-labelledBy="options-tab">
+	  
+	  <div class="span3">
+	  
+	<form id="circlesettingsform">
+	  <fieldset>
+		<legend>Circle Settings</legend>
+		<label>Change Name</label>
+		<input type="text" placeholder="New Name…" name = "newcirclename" required>
+		<button type="submit" class="btn btn-primary">Change</button>
+		<button type="button" class="btn btn-danger" id = "deletecircle" >Delete Circle</button>
+	  </fieldset>
+	</form>
+
+	<form id="circlemembersform">
+	  <fieldset>
+		<legend>Remove Members</legend>		
+		<select requried name="memberselect" required>';
+		
+		 $result = $utilites->getCustomersOfCircle($circleid);
+		 
+		 while($row = $result->fetch_assoc())
+		 {
+			if($row['idcustomer'] != $id)
+			{
+				echo '<option value='.$row['idcustomer'].'>'.$row['firstname'].' '.$row['lastname'].'</option>';
+			}
+		 }
+		
+		echo ';
+		</select>
+		
+		<button type="submit" class="btn btn-primary">Submit</button>
+	  </fieldset>
+	</form>
+
 	  </div>
+	  
+	  </div>';
+	  }
+	  ?>
+	  
 
     </div>
   </div><!-- /example -->
@@ -652,6 +728,60 @@ include ("scripts/Navbar.php");
 			
 	 });
 	 
+	 $(".acceptcircleinv").click(function(e){
+	 
+		var cid = $(e.target).attr("id");
+		var uid = <?php  echo $id;  ?>;
+		var action = 10;
+		
+		var darray = new Array(action,cid,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
+	 
+	 });
+	 
+	 $(".declinecircleinv").click(function(e){
+	 
+		var cid = $(e.target).attr("id");
+		var uid = <?php  echo $id;  ?>;
+		var action = 11;
+		
+		var darray = new Array(action,cid,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
+	 
+	 });
+	 
 	 function setDeletePost(post)
 	 {
 		deletepost = post;
@@ -728,6 +858,98 @@ include ("scripts/Navbar.php");
 			});
 		
 		
+	 
+	 });
+	 
+	 $("#circlesettingsform").submit(function(e){
+		
+		e.preventDefault();
+	 
+		var newname = $("[name='newcirclename'").val();
+		var cid = <?php echo $circleid; ?>;
+		var uid = <?php  echo $id;  ?>;
+		var action = 12;
+		
+		var darray = new Array(action,cid,newname,uid);
+		
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
+	 
+	 });
+	 
+	 
+	 $("#circlemembersform").submit(function(e){
+	 
+	 e.preventDefault();
+	 
+	 var rid = $("[name='memberselect'").val();
+	 var cid = <?php echo $circleid; ?>;
+	 var uid = <?php  echo $id;  ?>;
+	 var action = 13;
+	 
+	 var darray = new Array(action,cid,rid,uid);
+	 
+	 $.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+	 
+	 
+	 });
+	 
+	 $("#createcircle").submit(function(e){
+	 
+		e.preventDefault();
+		
+		var name = $("[name='namecircleinput'").val();
+		var uid = <?php  echo $id;  ?>;
+		var action = 14;
+		
+		var darray = new Array(action,name,uid);
+		
+			
+			$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+	 
 	 
 	 });
 	 

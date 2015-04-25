@@ -27,24 +27,368 @@ class CustomerUtilites
 	}
 	
 	
-	function getCirclesOfCustomer()
+	function echoNav($activetab)
 	{
-	
-	
-	$con = DBcon::getDBcon();
-	$mysqli = $con->getMysqliObject();
-	
-	$params = array("i",$this->uid);
-	
-	$this->queryhelper->beginTransaction($mysqli);
-	$result = $this->queryhelper->executeStatement($mysqli,"SELECT c.* FROM circle c
+		
+		
+		
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$queryhelper = new PreparedQueryHelper();
+		
+		$queryhelper->beginTransaction($mysqli);
+		
+		$params1 = array("ii",$this->uid,$this->uid);
+		
+		$result = $queryhelper->executeStatement($mysqli,"SELECT c.* FROM circle c
 										 INNER JOIN circlemembers
 										 ON circlemembers.idcircle = c.idcircle
 										 INNER JOIN customer
 										 ON customer.idcustomer = circlemembers.customer_idcustomer
-										 WHERE customer.idcustomer = ?",$params);
-										 
+										 WHERE customer.idcustomer = ? AND c.customer_idcustomer = ?",$params1);
+		
+		
+		$result2 = $queryhelper->executeStatement($mysqli,"SELECT c.* FROM circle c
+										 INNER JOIN circlemembers
+										 ON circlemembers.idcircle = c.idcircle
+										 INNER JOIN customer
+										 ON customer.idcustomer = circlemembers.customer_idcustomer
+										 WHERE customer.idcustomer = ? AND c.customer_idcustomer <> ?",$params1);
+		
+		
+		$queryhelper->commitTransaction($mysqli);
+		
+		
+		
+		
+	
+		echo '<div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+		 <div class = "row-fluid" >
+		  <div class="span1 offset2">
+          <a class="brand" href="./index.html"><img src="assets/img/SBHlogo.jpg" width="40" height="40" ></a>
+		  </div>
+		 <ul class="nav" style="position: relative; top: 10px;">
+		
+
+              <li '; if($activetab == 0) { echo 'class="active"';}  echo'>
+                <a href="./home.php">All</a>
+              </li>
+              <li '; if($activetab == 1) { echo 'class="active"';}  echo'>
+                <a href="./profile.php">Profile</a>
+              </li>
+              <li '; if($activetab == 2) { echo 'class="active"';}  echo'>
+                <a href="./accounts.php">Accounts</a>
+              </li>
+             <li class="dropdown" '; if($activetab == 3) { echo 'class="active"';}  echo'>
+                <a class="dropdown-toggle" id="drop5" role="button" data-toggle="dropdown" href="#">My Circles<b class="caret"></b></a>
+                <ul id="circledrop" class="dropdown-menu" role="menu" aria-labelledby="drop5" style="width: 250px">';
+				
+					while($row = $result->fetch_assoc())
+					{
+						echo '<li role="presentation"><a role="menuitem" tabindex="-1" href="http://localhost/SBH/circle.php?circleid='.$row['idcircle'].'">'.$row['name'].' &nbsp <i class="icon-star"></i></a></li>';
+					}
+				
+					while($row2 = $result2->fetch_assoc())
+					{
+						echo '<li role="presentation"><a role="menuitem" tabindex="-1" href="http://localhost/SBH/circle.php?circleid='.$row2['idcircle'].'">'.$row2['name'].'</a></li>';
+					}
+				
+					$crow = $this->getCustomerRowById($this->uid,false);
+      
+				  echo '
+                  <li role="presentation" class="divider"></li>
+                  <li role="presentation">
+				  <div class="input-append offset1">
+					<form id = "createcircle">
+					<input class="span9" name="namecircleinput" required type="text">
+					<button class="btn" type="submit">Create!</button>
+					</form>
+					</div>
+				  </li>
+                </ul>
+              </li>
+              <li '; if($activetab == 4) { echo 'class="active"';}  echo'>
+                <a href="./messages.php">Messages</a>
+              </li>
+              <li '; if($activetab == 5) { echo 'class="active"';}  echo'>
+                <a href="./plus.html">Purchases</a>
+              </li>
+
+            </ul>
+			
+			 <ul class="nav offset2" style="position: relative; top: 10px;">
+			 
+			 <li style="position: relative; top: 12px;">'.$crow['firstname'].' '.$crow['lastname'].'</li>
+			 
+			  <li class="dropdown dropdown-notification" style="position: relative; top: -15px;">
+			    <a class="btn btn-small dropdown-toggle" data-toggle = "dropdown" href="#"><i class="icon-bell"><span class="badge badge-info"></span></i></a>
+			  
+				 <ul class="dropdown-menu dropdown-notifications">
+                                  <li class="header">Notifications</li>';
+
+								  $this->echoNotifications($this->uid);
+								  
+                                 echo' <li>
+                                     <span class="title"><strong>Notification</strong> title</span>
+                                  </li>
+                 </ul>
+			  
+			  </li>
+			 
+			  <li class="" style="position: relative; top: -5px;">
+			    <a class="btn btn-small" href="scripts/LogoutScript.php">Logout</a>
+			  </li>
+			 
+			 </ul>
+			 
+			 
+          </div>
+		 </ul>		
+		</div>
+
+      </div>';
+	
+	}
+	
+	function getCustomersOfCircle($circleid)
+	{
+	$con = DBcon::getDBcon();
+	$mysqli = $con->getMysqliObject();
+	
+	$params = array("i",$circleid);
+	
+	$this->queryhelper->beginTransaction($mysqli);
+	
+	$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM customer c
+															INNER JOIN circlemembers
+															ON circlemembers.customer_idcustomer = c.idcustomer
+															WHERE idcircle = ?",$params);
+	
 	$this->queryhelper->commitTransaction($mysqli);
+	
+	return $result;
+		
+	}
+	
+	function getAdvertisementRow($id)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("i",$id);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM advertisement WHERE idadvertisement = ?",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result->fetch_assoc();
+	
+	}
+	
+	function getTransactionOfAccount($accid)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("i",$accid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM transaction WHERE accountfkey = ?",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+	
+	}
+	
+	function getAccountsOfCustomer()
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("i",$this->uid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM account WHERE customer_idcustomer = ?",$params);
+												 
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+	}
+	
+	function buildAdvertisementModal($mode)
+	{
+			/*mode 1 is all advertisement, mode 2 is by prefrence, mode 3 is by past purchase*/
+			
+			$result;
+			
+			if($mode == 1)
+			{
+				$result = $this->listAllAdvertisements();
+			}
+			
+			$slidelist = "";
+			$contentlist = "";
+			$count = 0;
+			$firstitemcount;
+			
+			$formatter = new \NumberFormatter('en_US',  \NumberFormatter::CURRENCY);
+			
+			while($row = $result->fetch_assoc())
+			{
+				if($count == 0)
+				{
+					$firstitemcount = $row['unitsleft'];
+				
+					$slidelist .= '<li data-target="#itembroswer" data-slide-to="'.$count.'" class="active"></li>';
+					$contentlist .= '<div class="item active" id = '.$row['idadvertisement'].'>
+						<img src="'.$row['imgloc'].'" alt="">
+						<div class="carousel-caption">
+						  <h4>'.$row['itemname'].'</h4>
+						  <p>'.$row['content'].'</p>
+						  <p id = "price'.$row['idadvertisement'].'">Price: '.$formatter->formatCurrency($row['unitprice'], 'USD') . PHP_EOL.'</p>
+						  <p>Units Left: '.$row['unitsleft'].'</p>
+						</div>
+					  </div>';
+				}
+				else
+				{
+					$slidelist .= '<li data-target="#itembroswer" data-slide-to="'.$count.'" ></li>';
+					$contentlist .= '<div class="item" id = '.$row['idadvertisement'].'>
+						<img src="'.$row['imgloc'].'" alt="">
+						<div class="carousel-caption">
+						  <h4>'.$row['itemname'].'</h4>
+						  <p>'.$row['content'].'</p>
+						  <p id = "price'.$row['idadvertisement'].'">Price: '.$formatter->formatCurrency($row['unitprice'], 'USD') . PHP_EOL.'</p>
+						  <p>Units Left: '.$row['unitsleft'].'</p>
+						</div>
+					  </div>';
+				}
+				
+				$count++;
+			}
+			
+	
+		     echo ' <div id="purchasemodal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style = "width: 900px;">
+				  <div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h3 id="myModalLabel">Shopping</h3>
+				  </div>
+				  
+				  <div class="modal-body" style = "width: 850px; max-height: 750px;">
+				  
+					<div class="span8" id = "purchaseinner">
+					
+				<div id="itembroswer" class="carousel slide">
+                <ol class="carousel-indicators">';
+				echo $slidelist;
+                echo '
+                </ol>
+				
+					<div class="carousel-inner" id = "caroinner">';
+					
+					echo $contentlist;
+					  
+					echo '</div>
+                <a class="left carousel-control" href="#itembroswer" data-slide="prev">&lsaquo;</a>
+                <a class="right carousel-control" href="#itembroswer" data-slide="next">&rsaquo;</a>
+                </div>
+				 
+					</div>
+
+				<form>
+				  <fieldset>
+					<legend>Buy This Item</legend>
+					<span class="help-block">Quantity</span>
+					<input type="number" min="1" max="'.$firstitemcount.'" name="qtyenter"> <br>
+					<span id = "subtotal">Total: $22,000</span> <br>
+					<button type="submit" class="btn btn-primary">Submit</button>
+				  </fieldset>
+				</form>
+					
+					</div>
+					 
+				  
+				  <div class="modal-footer">
+					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+
+			</div>';
+
+	}
+	
+	function getItemsLeft($itemid)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("i",$itemid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT unitsleft FROM advertisement WHERE idadvertisement = ?",$params);
+												 
+			$this->queryhelper->commitTransaction($mysqli);
+			$row = $result->fetch_assoc();
+			return $row['unitsleft'];
+			
+			
+	}
+	
+	function listAllAdvertisements()
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("i",$this->uid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $mysqli->query("SELECT * FROM advertisement");
+												 
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+	}
+	
+	function listAdvertisementsByPref()
+	{
+	
+	}
+	
+	function listAdvertisementsByPastPurchse()
+	{
+	
+	}
+	
+	function createAccount()
+	{
+	
+	}
+	
+	function getCirclesOfCustomer()
+	{
+	
+			
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("i",$this->uid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT c.* FROM circle c
+												 INNER JOIN circlemembers
+												 ON circlemembers.idcircle = c.idcircle
+												 INNER JOIN customer
+												 ON customer.idcustomer = circlemembers.customer_idcustomer
+												 WHERE customer.idcustomer = ?",$params);
+												 
+			$this->queryhelper->commitTransaction($mysqli);
 
 			
 			
@@ -58,6 +402,75 @@ class CustomerUtilites
 			
 			return $circlearray;
 
+	}
+	
+	
+	function createCircle($circlename)
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$params = array("si",$circlename,$this->uid);
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$result = $this->queryhelper->executeStatement($mysqli,"INSERT INTO circle (name,customer_idcustomer) VALUES (?,?)",$params);
+		
+		$key = $mysqli->insert_id;
+		
+		$pgresult = $mysqli->query("SELECT MAX(idpage) AS next FROM pages");
+		$row = $pgresult->fetch_assoc();
+		$pkey = $row['next'];
+		$pkey = $pkey + 1;
+		
+		$params = array("ii",$pkey,$key);
+		$pgresult = $this->queryhelper->executeStatement($mysqli,"INSERT INTO pages (idpage,fkcircle) VALUES (?,?)",$params);
+		
+		
+		$params2 = array("ii",$key,$this->uid);
+		
+		$result2 = $this->queryhelper->executeStatement($mysqli,"INSERT INTO circlemembers (idcircle,customer_idcustomer) VALUES (?,?)",$params2);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		return $result2;
+	
+	}
+	
+	
+	function editCircleName($circleid,$newname)
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$params = array("si",$newname,$circleid);
+	
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$result = $this->queryhelper->executeStatement($mysqli,"UPDATE circle SET name = ? WHERE idcircle = ?",$params);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		return $result;
+	
+	}
+	
+	function removeCustomerFromCircle($circleid,$custid)
+	{
+	
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$params = array("ii",$circleid,$custid);
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$result = $this->queryhelper->executeStatement($mysqli,"DELETE FROM circlemembers WHERE idcircle = ? AND customer_idcustomer = ? ",$params);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		return $result;
+	
 	}
 	
 	function createPost($circleid,$content)
@@ -252,6 +665,17 @@ class CustomerUtilites
 		
 	}
 	
+	function getAllCustomer()
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$result = $mysqli->query("SELECT * FROM customer ORDER BY lastname ASC");
+		
+		return $result;
+	
+	}
+	
 	function generateCardById($id,$style)
 	{
 		
@@ -285,6 +709,8 @@ class CustomerUtilites
 		return $card;
 	}
 	
+
+	
 	
 	function inviteToCircle($circleid, $custid)
 	{
@@ -293,15 +719,105 @@ class CustomerUtilites
 		
 		
 		$params = array("ii",$custid,$circleid);
+		$params2 = array("i",$circleid);
 		
 		$this->queryhelper->beginTransaction($mysqli);
 		
-		$result = $this->queryhelper->executeStatement($mysqli,"INSERT INTO invitedtocircle (customer_idcustomer,circle_idcircle) VALUES (?,?)",$params);
+		$result =  $this->queryhelper->executeStatement($mysqli,"SELECT name, customer_idcustomer FROM circle WHERE idcircle = ?",$params2);
+		$circlerow = $result->fetch_assoc();
+		
+		$circlename = $circlerow['name'];
+		
+		$custrow = $this->getCustomerRowById($circlerow['customer_idcustomer'], false);
+		
+		$params3 = array("ssii","Circle Invitation","You have been invited to ".$circlename." by ".$custrow['firstname']." ".$custrow['lastname']."",$custid,$circleid);
+		
+		
+		$result1 = $this->queryhelper->executeStatement($mysqli,"INSERT INTO invitedtocircle (customer_idcustomer,circle_idcircle) VALUES (?,?)",$params);
+		$result2 = $this->queryhelper->executeStatement($mysqli,"INSERT INTO notification (type,title,text,customer_idcustomer,circle_idcircle) VALUES (1,?,?,?,?)",$params3);
 		
 		$this->queryhelper->commitTransaction($mysqli);
 		
 		return $result;
 	
+	}
+	
+	function acceptCircleInv($circleid)
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		
+		$params = array("ii",$circleid,$this->uid);
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$result =  $this->queryhelper->executeStatement($mysqli,"INSERT INTO circlemembers (idcircle,customer_idcustomer) VALUES (?,?)",$params);
+		$result2 = $this->queryhelper->executeStatement($mysqli,"DELETE FROM invitedtocircle WHERE circle_idcircle = ? AND customer_idcustomer = ?",$params);
+		$result3 = $this->queryhelper->executeStatement($mysqli,"DELETE FROM notification WHERE circle_idcircle = ? AND customer_idcustomer = ?",$params);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		return $result;
+	}
+	
+	function declineCircleInv($circleid)
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		
+		$params = array("ii",$circleid,$this->uid);
+		
+		$this->queryhelper->beginTransaction($mysqli);
+	
+		$result = $this->queryhelper->executeStatement($mysqli,"DELETE FROM invitedtocircle WHERE circle_idcircle = ? AND customer_idcustomer = ?",$params);
+		$result1 = $this->queryhelper->executeStatement($mysqli,"DELETE FROM notification WHERE circle_idcircle = ? AND customer_idcustomer = ?",$params);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		return $result1;
+	
+	}
+	
+	function echoNotifications($custid)
+	{
+	
+		/*type1: circle invitation*/
+	
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$params = array("i",$custid);
+		
+		$result =  $this->queryhelper->executeStatement($mysqli,"SELECT * FROM notification WHERE customer_idcustomer = ? ORDER BY idnotification DESC",$params);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		while($row = $result->fetch_assoc())
+		{
+					if($row['type'] == 1)
+					{
+									echo '<li>
+                                     <span class="title">'.$row['title'].'</span>
+                                     <div class="media">
+                                        <a class="pull-left" href="#">
+                                           <img class="media-object" data-src="holder.js/48x48/#fff:#444">
+                                        </a>
+                                        <div class="media-body">
+                                         '.$row['text'].'
+                                        </div>
+										<div class="card-actions">
+										<button class="btn btn-primary acceptcircleinv" id = "'.$row['circle_idcircle'].'">Accept</button>
+										<button class="btn btn-warning declinecircleinv" id = "'.$row['circle_idcircle'].'">Decline</button>
+										</div>
+                                     </div>
+                                  </li>';
+					}
+		}
+		
 	}
 	
 	function getInvitedCards($circleid)
@@ -542,19 +1058,161 @@ class CustomerUtilites
 		   </div>';
 	}
 	
-	function getCustomerRowById($id)
+	function getCustomerRowById($id, $trans)
 	{
 			$con = DBcon::getDBcon();
 			$mysqli = $con->getMysqliObject();
 	
 			$params = array("i", $id);
-	
+			
+			if($trans == true)
 			$this->queryhelper->beginTransaction($mysqli);
+			
 			$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM customer WHERE idcustomer = ?",$params);
+			
+			if($trans == true)
 			$this->queryhelper->commitTransaction($mysqli);
 			
 			return $result->fetch_assoc();
 			
+	}
+	
+	function getConversations()
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+	
+			$params = array("iii", $this->uid, $this->uid, $this->uid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT DISTINCT c.idcustomer FROM customer c
+			  WHERE c.idcustomer <> ?
+			  AND
+			  (
+			  c.idcustomer IN (SELECT m1.customer_from FROM message m1 WHERE m1.customer_to = ?)
+			  OR
+			  c.idcustomer IN (SELECT m2.customer_to FROM message m2 WHERE m2.customer_from = ?))",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+
+
+	}
+	
+	function buildChatSelector()
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$result = $this->getConversations();
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		while($row = $result->fetch_assoc())
+		{
+			$custrow = $this->getCustomerRowById($row['idcustomer'],true);
+		
+			echo '<li><a href="#" class = "messagethread" id = "mthread'.$row['idcustomer'].'"><img style = "position: relative; left: -20px;" "src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAuCAYAAABXuSs3AAACDUlEQVRoQ+2USYsCMRSEq8V9P4giInpQEDdE8P//AHEBUVxQ0IO4exBcEO3hPRhx5tCJEoQZkkun+6UrlS+VGLvdzsQfbIY2/uFd08Q/DByauCYuSUBHRRKUsmGauDKUkkKauCQoZcM0cWUoJYU0cUlQyob9f+Kn0wntdhumaaJarcLtdmM6nWIymeB2uyEYDKJUKsHj8VhSVaUjTbzX62E+n8Pr9bLxw+GAbreLZDLJixgOh9zPZDKWxlXpSBlfLpfo9/u43+9wuVxsnGgvFgvuBwKBh9nRaMS1VCrFixwMBojFYsjn81itVtI6osMgNH4+n9FqteDz+XC5XHC9XtnseDzGZrOBzWbj799RsdvtaDQa/M0wDDgcDlQqFe6/oiOKnNA4be1+v+fJqf9snHYim83C6XRyLRKJcM7X6zXHiM5DLpdDPB7n+qs6VtQtjRPtZrOJ4/H4Q4MiEAqFmDjRJ6o0jp61Wg2z2QwUGWrpdBqJROItnbeN//6xXq8/iD8fTlpEp9NBNBploxQJihDFg3aoXC4jHA4/5GR0CoWCZcyFUXn++3lCOqR0FRJdug7JWLFY5Ntlu91yRCjvFBm/389Ro3dqIh2KG+krIy466Z+sv0T8k8ZEc2njIkKq65q4aqIiPU1cREh1XRNXTVSkp4mLCKmua+KqiYr0NHERIdV1TVw1UZHenyX+BZNo41wwGYJwAAAAAElFTkSuQmCC" alt="46x46" data-src="holder.js/46x46" style="width: 46px; height: 46px;">'.$custrow['firstname'].' '.$custrow['lastname'].'</a></li>';
+		}
+	}
+	
+	function getMessages($custid)
+	{
+		date_default_timezone_set('America/New_York');
+	
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$params = array("iiii", $this->uid, $custid, $this->uid, $custid);
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		
+		$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM message WHERE (customer_to = ? OR customer_to = ?) AND (customer_from = ? OR customer_from = ?) ORDER BY date ASC",$params);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		$htmlres = "";
+		
+		while($row = $result->fetch_assoc())
+		{
+			
+			$custrowfrom = $this->getCustomerRowById($row['customer_from'],true);
+			$custrowto = $this->getCustomerRowById($row['customer_to'],true);
+			
+			$htmlres .= '<div class="media">
+              <a class="pull-left" href="#">
+                <img class="media-object" data-src="holder.js/64x64" alt="64x64" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAACfElEQVR4Xu2Y54piQRCFj4oRURETiAEVEyKCvv8TiAmMmBUMmDEgKO5Wg+LsMjsz9+LsoNV/BLHrdp8+db5rKxaLxQUvPBQsADuAW4Az4IUzEByCTAGmAFOAKcAUeGEFGIOMQcYgY5Ax+MIQ4D9DjEHGIGOQMcgYZAy+sAKyMTibzVCv13E4HKDVahEOh+F0Ot9IWqvVMBwOEQqF4Pf7P5T7ETXfe6gsAbbbLfL5PEwmE4LBIAqFAjQaDVKplPik8RuzKJVKOJ1OnxLgETX/pbgsAfr9PlqtFmKxGFwu11/POZ/PKBaLWC6XuFwuNwE6nQ7a7Tbsdrv4joSj3yaTSazXa0k1P7TVOz+QJUClUsF4PBbWpxbQ6XSIRqOw2WzicVeBLBYL5vP5TQByQy6Xw36/F+4hgag1yEVSa/4XAcrlMkajkTh92gCdpEqlQiaTEZan9tDr9SAByCn3GUDCVatVcfJGoxHpdBpqtRpyakoRQZYDaLGTyQTxeFyIQBsmCycSCVCQTadTYevVaoVms/lGABIom82Cet7r9YrwpCGn5rcL0Ov1xMlGIhG43e5bv9Nmut2usPif4+qCaw5QNlALkVBmsxlyan67ANfENhgMovcp8JRK5c3O1wWRGPcOuM5TKBRwOBwYDAawWq2CHrvdTjjpqzWlbJ7myGoBKkAt0Gg0cDwexaKpHajn78e9AD6f72bzQCAAj8cjsmOz2dyc9NWan3m3eMh7gFTVf9I82Q74SZuRshYWgG+E+EaIb4T4RkhKej7LHKYAU4ApwBRgCjxLokvZB1OAKcAUYAowBaSk57PMYQowBZgCTAGmwLMkupR9MAVenQK/ABFDeJ+TLM9JAAAAAElFTkSuQmCC" style="width: 64px; height: 64px;">
+              </a>';
+			  
+
+			  $htmlres .= '
+              <div class="media-body">
+                <h4 class="media-heading">'.$custrowfrom['firstname'].' '.$custrowfrom['lastname'].' <span style = "  font-size: 12px; color: #999999; opacity: .5">Sent at '.date('h:i a m/d/Y', strtotime($row['date'])).'</span>';
+				
+				if($custrowfrom['idcustomer'] == $this->uid)
+				{
+				$htmlres .= '<div class="dropdown" style="display:inline; position: relative; top:-10px">
+					   <a id="'.$row['idmessage'].'options" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
+                      <ul class="dropdown-menu" role="menu" aria-labelledby="'.$row['idmessage'].'options" style = "z-index: 4000">                 
+                        <li role="presentation" class="deletemessage"><a role="menuitem" tabindex="-1" href="#" onclick = "deleteMessage('.$row['idmessage'].')">Delete</a></li>         
+                      </ul>
+						</div>';
+				
+				}
+				
+				$htmlres .= '
+				</h4>
+                '.$row['content'].'
+              </div>
+            </div>';
+			
+		}
+		
+		return $htmlres;
+	}
+	
+	function sendMessage($messagecontent, $recid)
+	{
+		date_default_timezone_set('America/New_York');
+	
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$date = date('Y-m-d H:i:s', time());
+		
+		$params = array("siis", $messagecontent, $recid, $this->uid, $date);
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$result = $this->queryhelper->executeStatement($mysqli,"INSERT INTO message (content,customer_to,customer_from,date) VALUES (?,?,?,?)",$params);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		return $result;
+	
+	}
+	
+	function deleteMessage($messageid)
+	{
+	
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$params = array("i", $messageid);
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$result = $this->queryhelper->executeStatement($mysqli,"DELETE FROM message WHERE idmessage = ?",$params);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		return $result;
+	
 	}
 	
 	
@@ -712,7 +1370,7 @@ class CustomerUtilites
 						  else if ($likecount == 1)
 						  {
 						   $lrow = $likeresult->fetch_assoc();
-						   $custrec = $this->getCustomerRowById($lrow['customer_idcustomer']);
+						   $custrec = $this->getCustomerRowById($lrow['customer_idcustomer'],true);
 						   echo'<span>'.$custrec['firstname'].' '.$custrec['lastname'].' likes this</span>';
 						  }
 						  else
@@ -722,7 +1380,7 @@ class CustomerUtilites
 							while($lrow = $likeresult->fetch_assoc())
 							{
 							
-								$custrec = $this->getCustomerRowById($lrow['customer_idcustomer']);
+								$custrec = $this->getCustomerRowById($lrow['customer_idcustomer'],true);
 								
 								$custlisthtml .= $custrec['firstname'];
 								$custlisthtml .= "&nbsp";
@@ -810,7 +1468,7 @@ class CustomerUtilites
 										while($likerow = $likeresult->fetch_assoc())
 										{
 										
-											$custrec = $this->getCustomerRowById($likerow['customer_idcustomer']);
+											$custrec = $this->getCustomerRowById($likerow['customer_idcustomer'],true);
 											
 											$custlisthtml .= $custrec['firstname'];
 											$custlisthtml .= "&nbsp";

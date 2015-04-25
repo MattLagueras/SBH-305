@@ -516,6 +516,60 @@ include_once ("scripts/Navbar.php");
 			
 	 });
 	 
+	  $(".acceptcircleinv").click(function(e){
+	 
+		var cid = $(e.target).attr("id");
+		var uid = <?php  echo $id;  ?>;
+		var action = 10;
+		
+		var darray = new Array(action,cid,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
+	 
+	 });
+	 
+	 $(".declinecircleinv").click(function(e){
+	 
+		var cid = $(e.target).attr("id");
+		var uid = <?php  echo $id;  ?>;
+		var action = 11;
+		
+		var darray = new Array(action,cid,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
+	 
+	 });
+	 
 	 function setDeletePost(post)
 	 {
 		deletepost = post;
@@ -592,6 +646,36 @@ include_once ("scripts/Navbar.php");
 			});
 		
 		
+	 
+	 });
+	 
+	 $("#createcircle").submit(function(e){
+	 
+		e.preventDefault();
+		
+		var name = $("[name='namecircleinput'").val();
+		var uid = <?php  echo $id;  ?>;
+		var action = 14;
+		
+		var darray = new Array(action,name,uid);
+		
+			
+			$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+	 
 	 
 	 });
 	 
