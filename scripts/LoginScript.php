@@ -34,15 +34,31 @@ include_once ("DBcon.php");
 	{
 		$row = $result->fetch_assoc();
 		$sessionManager->setSessionVar("userid",$row['idcustomer']);
+		$sessionManager->setSessionVar("role","customer");
 		$res = array('message' => "customer");
 		echo json_encode($res);
 		$con->closeConnection();
 	}
 	else
 	{
+		$query = mysqli_prepare($mysqli,"SELECT * FROM manager WHERE email = ? AND password = ?");
+		$result = $query->get_result();
+		
+		if(mysqli_num_rows($result) > 0)
+		{
+		$row = $result->fetch_assoc();
+		$sessionManager->setSessionVar("userid",$row['idmanager']);
+		$sessionManager->setSessionVar("role","manager");
+		$res = array('message' => "manager");
+		echo json_encode($res);
+		$con->closeConnection();
+		}
+		else
+		{
 		$res = array('message' => "error");
 		echo json_encode($res);
 		$con->closeConnection();
+		}
 	}
 	
 	

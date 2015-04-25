@@ -94,6 +94,11 @@
             {
 			  window.location.replace("http://localhost/SBH/home.php");
             }
+			
+			if(result.message == "manager")
+            {
+			  window.location.replace("http://localhost/SBH/managerhome.php");
+            }
         }
 
       }, "json")

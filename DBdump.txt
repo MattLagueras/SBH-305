@@ -336,6 +336,8 @@ CREATE TABLE `manager` (
   `telephone` varchar(10) DEFAULT NULL,
   `startdate` date DEFAULT NULL,
   `hourlyrate` decimal(2,0) DEFAULT NULL,
+  `username` varchar(45) DEFAULT NULL,
+  `password` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idmanager`),
   UNIQUE KEY `ssn_UNIQUE` (`ssn`)
 ) ENGINE=InnoDB AUTO_INCREMENT=111221 DEFAULT CHARSET=latin1;
@@ -347,7 +349,7 @@ CREATE TABLE `manager` (
 
 LOCK TABLES `manager` WRITE;
 /*!40000 ALTER TABLE `manager` DISABLE KEYS */;
-INSERT INTO `manager` VALUES (111220,'111444111','Scott','Thomas','11 Oak St,Mart Avenue','Stony Brook','ny','11790','4312345432','2011-05-01',35);
+INSERT INTO `manager` VALUES (111220,'111444111','Scott','Thomas','11 Oak St,Mart Avenue','Stony Brook','ny','11790','4312345432','2011-05-01',35,'tscott','password');
 /*!40000 ALTER TABLE `manager` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -593,4 +595,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-04-25 18:37:09
+-- Dump completed on 2015-04-25 18:53:58
