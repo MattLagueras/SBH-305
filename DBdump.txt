@@ -55,6 +55,7 @@ CREATE TABLE `advertisement` (
   `date` varchar(45) DEFAULT NULL,
   `company` varchar(45) DEFAULT NULL,
   `itemname` varchar(45) DEFAULT NULL,
+  `imgloc` mediumtext,
   `content` longtext,
   `unitprice` decimal(10,0) DEFAULT NULL,
   `unitsleft` int(11) DEFAULT NULL,
@@ -74,7 +75,7 @@ CREATE TABLE `advertisement` (
 
 LOCK TABLES `advertisement` WRITE;
 /*!40000 ALTER TABLE `advertisement` DISABLE KEYS */;
-INSERT INTO `advertisement` VALUES (33331,'2011-10-04','Ford','2012-Mustang','Ford Mustang! First 10 cutomers get a 10%Discount!',22000,30,111221,1),(33332,'2011-10-04','GAP','Superman Shirt','Just $5!!!!!!!',5,100,111222,2),(33333,'2011-10-04','GAP','Pac-Man Shirt','Waka Waka!!',7,100,111222,2),(33334,'2011-10-04','Allstate','Quality Car Insurance','Special Deal!! Get full coverage on any automobile for $1000 this year!',1000,5,111222,3);
+INSERT INTO `advertisement` VALUES (33331,'2011-10-04','Ford','2012-Mustang','assets/img/uploads/avs/mustang2012.jpg','Ford Mustang! First 10 cutomers get a 10%Discount!',22000,30,111221,1),(33332,'2011-10-04','GAP','Superman Shirt','assets/img/uploads/avs/supermanshirt.jpg','Just $5!!!!!!!',5,100,111222,2),(33333,'2011-10-04','GAP','Pac-Man Shirt','assets/img/uploads/avs/pacmanshirt.jpg','Waka Waka!!',7,100,111222,2),(33334,'2011-10-04','Allstate','Quality Car Insurance','assets/img/uploads/avs/allstate.jpg','Special Deal!! Get full coverage on any automobile for $1000 this year!',1000,5,111222,3);
 /*!40000 ALTER TABLE `advertisement` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -87,13 +88,13 @@ DROP TABLE IF EXISTS `circle`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `circle` (
   `idcircle` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(15) DEFAULT NULL,
+  `name` varchar(25) DEFAULT NULL,
   `type` varchar(15) DEFAULT NULL,
   `customer_idcustomer` int(11) NOT NULL,
   PRIMARY KEY (`idcircle`),
   KEY `fk_circle_customer1_idx` (`customer_idcustomer`),
   CONSTRAINT `fk_circle_customer1` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=8007 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8020 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -102,7 +103,7 @@ CREATE TABLE `circle` (
 
 LOCK TABLES `circle` WRITE;
 /*!40000 ALTER TABLE `circle` DISABLE KEYS */;
-INSERT INTO `circle` VALUES (8001,'My Friends','Friends',100100101),(8002,'Best Friends','Friends',100100102),(8003,'StonyBrookGang','Friends',100100105),(8004,'CSJunkies','Group',100100107),(8005,'Norris Family','Family',100100109),(8006,'Microsoft Group','Company',100100106);
+INSERT INTO `circle` VALUES (8001,'My Friends','Friends',100100101),(8002,'Best Friends','Friends',100100102),(8003,'StonyBrookGang','Friends',100100105),(8004,'CSJunkies','Group',100100107),(8005,'The Norris Family','Family',100100109),(8006,'Microsoft Group','Company',100100106),(8019,'Secret Friends',NULL,100100101);
 /*!40000 ALTER TABLE `circle` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -129,7 +130,7 @@ CREATE TABLE `circlemembers` (
 
 LOCK TABLES `circlemembers` WRITE;
 /*!40000 ALTER TABLE `circlemembers` DISABLE KEYS */;
-INSERT INTO `circlemembers` VALUES (8001,100100101),(8002,100100101),(8001,100100102),(8002,100100102),(8001,100100103),(8004,100100103),(8001,100100104),(8004,100100104),(8003,100100105),(8005,100100105),(8003,100100106),(8006,100100106),(8004,100100107),(8006,100100107),(8005,100100108),(8006,100100108),(8005,100100109),(8006,100100109),(8002,100100110),(8005,100100110);
+INSERT INTO `circlemembers` VALUES (8001,100100101),(8002,100100101),(8019,100100101),(8001,100100102),(8002,100100102),(8019,100100102),(8001,100100103),(8004,100100103),(8001,100100104),(8004,100100104),(8003,100100105),(8005,100100105),(8003,100100106),(8006,100100106),(8004,100100107),(8006,100100107),(8005,100100108),(8006,100100108),(8005,100100109),(8006,100100109),(8002,100100110),(8005,100100110);
 /*!40000 ALTER TABLE `circlemembers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -151,7 +152,7 @@ CREATE TABLE `comment` (
   KEY `fk_comment_customer1_idx` (`customer_idcustomer`),
   CONSTRAINT `fk_comment_customer1` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_comment_post` FOREIGN KEY (`fkpost`) REFERENCES `posts` (`idposts`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=900007 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=900013 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -160,7 +161,7 @@ CREATE TABLE `comment` (
 
 LOCK TABLES `comment` WRITE;
 /*!40000 ALTER TABLE `comment` DISABLE KEYS */;
-INSERT INTO `comment` VALUES (900001,'Its beautiful! :)',20111,100100101,'2011-10-10 00:00:00.0'),(900002,'Nature\'s white blanket :D',20111,100100107,'2011-10-10 00:00:00.0'),(900003,'GO! GO! GO!',20112,100100104,'2011-10-11 00:00:00.0'),(900004,'we totally owned them!',20112,100100103,'2011-10-11 00:00:00.0'),(900005,'we won! We won!',20112,100100102,'2011-10-12 00:00:00.0'),(900006,'Congrats!',20114,100100109,'2011-10-12 00:00:00.0');
+INSERT INTO `comment` VALUES (900001,'Its beautiful! :)',20111,100100101,'2011-10-10 00:00:00.0'),(900002,'Nature\'s white blanket :D',20111,100100107,'2011-10-10 00:00:00.0'),(900003,'GO! GO! GO!',20112,100100104,'2011-10-11 00:00:00.0'),(900004,'we totally owned them!',20112,100100103,'2011-10-11 00:00:00.0'),(900005,'we won! We won!',20112,100100102,'2011-10-12 00:00:00.0'),(900006,'Congrats!',20114,100100109,'2011-10-12 00:00:00.0'),(900007,'I know me too I get it',20113,100100101,'2015-04-18 17:22:05.0'),(900011,'test comment',20114,100100101,'2015-04-18 21:13:18.0'),(900012,'wow this is so cool!!!!',20118,100100102,'2015-04-24 00:31:39.0');
 /*!40000 ALTER TABLE `comment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -188,7 +189,7 @@ CREATE TABLE `commenthaslike` (
 
 LOCK TABLES `commenthaslike` WRITE;
 /*!40000 ALTER TABLE `commenthaslike` DISABLE KEYS */;
-INSERT INTO `commenthaslike` VALUES (900002,100100101),(900002,100100102),(900002,100100103),(900002,100100104),(900004,100100106),(900004,100100107),(900004,100100108);
+INSERT INTO `commenthaslike` VALUES (900002,100100101),(900002,100100102),(900002,100100103),(900002,100100104),(900004,100100106),(900004,100100107),(900004,100100108),(900006,100100101),(900007,100100101);
 /*!40000 ALTER TABLE `commenthaslike` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -302,7 +303,7 @@ CREATE TABLE `invitedtocircle` (
   PRIMARY KEY (`customer_idcustomer`,`circle_idcircle`),
   KEY `fk_invitedtocircle_customer1_idx` (`customer_idcustomer`),
   KEY `fk_invitedtocircle_circle1_idx` (`circle_idcircle`),
-  CONSTRAINT `fk_invitedtocircle_circle1` FOREIGN KEY (`circle_idcircle`) REFERENCES `circle` (`idcircle`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_invitedtocircle_circle1` FOREIGN KEY (`circle_idcircle`) REFERENCES `circle` (`idcircle`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_invitedtocircle_customer1` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -358,7 +359,7 @@ DROP TABLE IF EXISTS `message`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `message` (
-  `idmessage` int(11) NOT NULL,
+  `idmessage` int(11) NOT NULL AUTO_INCREMENT,
   `content` longtext,
   `customer_to` int(11) NOT NULL,
   `customer_from` int(11) NOT NULL,
@@ -369,7 +370,7 @@ CREATE TABLE `message` (
   KEY `fk_message_customer2_idx` (`customer_from`),
   CONSTRAINT `fk_message_customer1` FOREIGN KEY (`customer_to`) REFERENCES `customer` (`idcustomer`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_message_customer2` FOREIGN KEY (`customer_from`) REFERENCES `customer` (`idcustomer`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3008 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -378,8 +379,40 @@ CREATE TABLE `message` (
 
 LOCK TABLES `message` WRITE;
 /*!40000 ALTER TABLE `message` DISABLE KEYS */;
-INSERT INTO `message` VALUES (3001,'Hey! Do u have assignent 1 questions?',100100102,100100101,'2011-10-10 00:00:00.0','hey!'),(3002,'nope? I think patrick has them.',100100101,100100102,'2011-10-10 00:00:00.0','re: hey!'),(3003,'hey u there! Have an amazing and super duper bday! Don?t miss me too much :D',100100104,100100103,'2011-11-11 00:00:00.0','happy bday!'),(3004,'Hey! I am sorry I wont make it to tonights appointment.Stuck with some work! :(',100100105,100100105,'2011-10-11 00:00:00.0','will be late');
+INSERT INTO `message` VALUES (3001,'Hey! Do u have assignent 1 questions?',100100102,100100101,'2011-10-10 00:00:00.0','hey!'),(3002,'nope? I think patrick has them.',100100101,100100102,'2011-10-10 00:00:00.0','re: hey!'),(3003,'hey u there! Have an amazing and super duper bday! Don?t miss me too much :D',100100104,100100103,'2011-11-11 00:00:00.0','happy bday!'),(3004,'Hey! I am sorry I wont make it to tonights appointment.Stuck with some work! :(',100100105,100100105,'2011-10-11 00:00:00.0','will be late'),(3005,'Ok thanks ill ask him',100100102,100100101,'2015-04-23 17:59:25.0',NULL),(3006,'Thanks again for everything!',100100110,100100101,'2015-04-24 00:08:38.0',NULL),(3007,'no problem have a great day!',100100101,100100110,'2015-04-24 00:15:53.0',NULL);
 /*!40000 ALTER TABLE `message` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `notification`
+--
+
+DROP TABLE IF EXISTS `notification`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `notification` (
+  `idnotification` int(11) NOT NULL AUTO_INCREMENT,
+  `type` tinyint(1) NOT NULL,
+  `title` varchar(45) DEFAULT NULL,
+  `text` varchar(128) NOT NULL,
+  `read` char(1) DEFAULT 'F',
+  `customer_idcustomer` int(11) DEFAULT NULL,
+  `circle_idcircle` int(11) DEFAULT NULL,
+  PRIMARY KEY (`idnotification`),
+  KEY `custfkey_idx` (`customer_idcustomer`),
+  KEY `circlefkey_idx` (`circle_idcircle`),
+  CONSTRAINT `circlefkey` FOREIGN KEY (`circle_idcircle`) REFERENCES `circle` (`idcircle`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `custfkey` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `notification`
+--
+
+LOCK TABLES `notification` WRITE;
+/*!40000 ALTER TABLE `notification` DISABLE KEYS */;
+/*!40000 ALTER TABLE `notification` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -404,7 +437,7 @@ CREATE TABLE `pages` (
 
 LOCK TABLES `pages` WRITE;
 /*!40000 ALTER TABLE `pages` DISABLE KEYS */;
-INSERT INTO `pages` VALUES (6900,8001),(6901,8002),(6904,8003),(6905,8004),(6908,8005),(6910,8006);
+INSERT INTO `pages` VALUES (6900,8001),(6901,8002),(6904,8003),(6905,8004),(6908,8005),(6910,8006),(6911,8019);
 /*!40000 ALTER TABLE `pages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -431,7 +464,7 @@ CREATE TABLE `posthaslike` (
 
 LOCK TABLES `posthaslike` WRITE;
 /*!40000 ALTER TABLE `posthaslike` DISABLE KEYS */;
-INSERT INTO `posthaslike` VALUES (20111,100100101),(20112,100100101),(20111,100100102),(20112,100100102),(20114,100100102),(20111,100100103),(20112,100100103),(20111,100100104),(20112,100100104),(20112,100100105),(20113,100100105),(20114,100100106),(20112,100100107),(20112,100100108),(20112,100100109);
+INSERT INTO `posthaslike` VALUES (20111,100100101),(20112,100100101),(20113,100100101),(20118,100100101),(20111,100100102),(20112,100100102),(20114,100100102),(20118,100100102),(20111,100100103),(20112,100100103),(20111,100100104),(20112,100100104),(20112,100100105),(20113,100100105),(20114,100100106),(20112,100100107),(20112,100100108),(20112,100100109);
 /*!40000 ALTER TABLE `posthaslike` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -455,7 +488,7 @@ CREATE TABLE `posts` (
   KEY `fk_posts_customer1_idx` (`customer_idcustomer`),
   CONSTRAINT `fk_post_page` FOREIGN KEY (`fkpage`) REFERENCES `pages` (`idpage`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_posts_customer1` FOREIGN KEY (`customer_idcustomer`) REFERENCES `customer` (`idcustomer`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=20118 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=20119 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -464,7 +497,7 @@ CREATE TABLE `posts` (
 
 LOCK TABLES `posts` WRITE;
 /*!40000 ALTER TABLE `posts` DISABLE KEYS */;
-INSERT INTO `posts` VALUES (20111,'2011-10-10 00:00:00','Its Snowing! :D',6904,100100105,'F',NULL),(20112,'2011-10-11 00:00:00','GO Seawolves!!!!',6910,100100106,'F',NULL),(20113,'2011-10-11 22:13:00','Arrgh!I hate facebook!',6900,100100103,'F',NULL),(20114,'2011-10-12 00:00:00','MackBook Finally!!!',6900,100100104,'F',NULL),(20115,'2011-10-11 00:00:00','ritchie RIP :(',6905,100100104,'F',NULL),(20116,'2011-10-10 00:00:00','test global post',NULL,100100101,'T',NULL),(20117,'2011-10-10 17:33:00','Yay midterms over!',6901,100100102,'F',NULL);
+INSERT INTO `posts` VALUES (20111,'2011-10-10 00:00:00','Its Snowing! :D',6904,100100105,'F',NULL),(20112,'2011-10-11 00:00:00','GO Seawolves!!!!',6910,100100106,'F',NULL),(20113,'2011-10-11 22:13:00','Arrgh!I hate facebook!',6900,100100103,'F',NULL),(20114,'2011-10-12 00:00:00','MackBook Finally!!!',6900,100100104,'F',NULL),(20115,'2011-10-11 00:00:00','ritchie RIP :(',6905,100100104,'F',NULL),(20116,'2011-10-10 00:00:00','test global post',NULL,100100101,'T',NULL),(20117,'2011-10-10 17:33:00','Yay midterms over!',6901,100100102,'F',NULL),(20118,'2015-04-24 00:30:40','Hi Guys welcome to my secret group hope you all have fun!',6911,100100101,'F',NULL);
 /*!40000 ALTER TABLE `posts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -560,4 +593,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-04-07 23:43:06
+-- Dump completed on 2015-04-25 18:37:09
