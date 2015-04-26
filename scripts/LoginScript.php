@@ -42,6 +42,10 @@ include_once ("DBcon.php");
 	else
 	{
 		$query = mysqli_prepare($mysqli,"SELECT * FROM manager WHERE email = ? AND password = ?");
+		
+		mysqli_stmt_bind_param($query,"ss",$email,$pass);
+		mysqli_stmt_execute($query);
+		
 		$result = $query->get_result();
 		
 		if(mysqli_num_rows($result) > 0)

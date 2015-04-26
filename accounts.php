@@ -214,71 +214,6 @@ include_once ("scripts/Navbar.php");
 	
 	var script = "scripts/AjaxHandler.php";
 	
-	$('.carousel').carousel({
-		interval: false
-	});
-	
-	$('#purchasemodal').modal('show')
-	$("[name='qtyenter'").val(1);
-	
-	$('.carousel').on('slide',function(e){
-
-		 var slideFrom = $(this).find('.active').attr("id");
-		 var slideTo = $(e.relatedTarget).attr("id");
-		 var uid = <?php  echo $id;  ?>;
-		 
-		 var darray = new Array(19,slideTo,uid);
-		 
-		 $.ajax({
-				type: "POST",
-				url: script,
-				dataType: "json",
-				data: {data:darray},
-				success: function(msg){
-					
-					var amt = $("#price"+slideTo).text();
-					amt = amt.replace("Price: ","");
-					amt = amt.replace("$","");
-					amt = amt.replace(",","");
-					amt = formatCurrency(amt);
-					$("#subtotal").text("Total: " + amt);
-					
-					$("[name='qtyenter'").attr('max', msg.num);
-					$("[name='qtyenter'").val(1);
-					
-				},
-				error: function(msg) {
-					var y;
-				}
-				
-			});
-			
-			
-	
-	});
-	
-
-
-	
-	
-	$("[name='qtyenter'").change(function(e) {
-	
-		var id = $("#caroinner").find('.active').attr("id");
-	
-		var amt = $("#price"+id).text();
-		amt = amt.replace("Price: ","");
-		amt = amt.replace("$","");
-		amt = amt.replace(",","");
-		
-		amt = amt * $(this).val();
-		amt = formatCurrency(amt);
-		
-		$("#subtotal").text("Total: " + amt);
-		
-		
-		
-	
-	});
 	
 	
 	
@@ -400,6 +335,120 @@ include_once ("scripts/Navbar.php");
 	 
 	 });
 	 
+	 $('.carousel').carousel({
+		interval: false
+	});
+	
+	
+	window.setTimeout(showAdvertisement, 5000);
+
+	function showAdvertisement()
+	{
+		$('#purchasemodal').modal('show');
+	}
+	
+	$("[name='qtyenter'").val(1);
+	
+	$('.carousel').on('slide',function(e){
+
+		 var slideFrom = $(this).find('.active').attr("id");
+		 var slideTo = $(e.relatedTarget).attr("id");
+		 var uid = <?php  echo $id;  ?>;
+		 
+		 var darray = new Array(19,slideTo,uid);
+		 
+		 $("#transerror").text("");
+		 
+		 $.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					var amt = $("#price"+slideTo).text();
+					amt = amt.replace("Price: ","");
+					amt = amt.replace("$","");
+					amt = amt.replace(",","");
+					amt = formatCurrency(amt);
+					$("#subtotal").text("Total: " + amt);
+					
+					$("[name='qtyenter'").attr('max', msg.num);
+					$("[name='qtyenter'").val(1);
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+			
+			
+	
+	});
+	
+
+
+	
+	
+	$("[name='qtyenter'").change(function(e) {
+	
+		var id = $("#caroinner").find('.active').attr("id");
+	
+		var amt = $("#price"+id).text();
+		amt = amt.replace("Price: ","");
+		amt = amt.replace("$","");
+		amt = amt.replace(",","");
+		
+		amt = amt * $(this).val();
+		amt = formatCurrency(amt);
+		
+		$("#subtotal").text("Total: " + amt);
+		
+		
+		
+	
+	});
+	
+	$("#purchaseform").submit(function(e) {
+	
+		e.preventDefault();
+		
+		$("#transerror").text("");
+		
+		var itemid = $("#caroinner").find('.active').attr("id");
+		var amt = $("[name='qtyenter'").val();
+		var accid = $("[name='accountselect'").val();
+		var uid = <?php  echo $id;  ?>;
+		var action = 20;
+		
+		var darray = new Array(20,itemid,amt,accid,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					if(msg.res == "out of stock")
+					{
+						$("#transerror").text("Error: Out of Stock");
+					}
+					else
+					{
+						location.reload();
+					}
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+	
+	});
+	
 	
 	 function formatCurrency(total) {
     var neg = false;
@@ -417,7 +466,7 @@ include_once ("scripts/Navbar.php");
 	</script>
 	
 	
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
+		<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
 			  <script src="chosen/chosen.jquery.js" type="text/javascript"></script>
   <script src="chosen/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript">
@@ -434,6 +483,6 @@ include_once ("scripts/Navbar.php");
       $(selector).chosen(config[selector]);
     }
 	
-	</script>
+	</script>-->
 	  </body>
 </html>

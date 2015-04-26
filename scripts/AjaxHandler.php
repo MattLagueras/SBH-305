@@ -21,7 +21,8 @@ ACTION CODES
 16 = Send Message [16,messagecontent,rid,uid]
 17 = Delete Message
 18 = Get Transactions For Account [18,aid,uid]
-19 = Get Items Left [19,itemit,uid]
+19 = Get Items Left [19,itemid,uid]
+20 = Buy Item [20,itemid,qty,accid,uid]
 
 
 */
@@ -297,6 +298,18 @@ error_reporting(-1);
 		$itemsleft = $utilites->getItemsLeft($data[1]);
 		
 		echo json_encode(array('result' => 'success', 'num' => $itemsleft));
+		
+		
+	}
+	
+	//[20,itemid,qty,uid]
+	if($data[0] == 20)
+	{
+		$utilites = new CustomerUtilites($data[4],-1);
+		
+		$result = $utilites->makeTransaction($data[1],$data[2],$data[3]);
+		
+		echo json_encode(array('result' => 'success', 'res' => $result));
 		
 		
 	}

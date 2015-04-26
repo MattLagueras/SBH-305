@@ -274,6 +274,7 @@ class CustomerUtilites
 				$count++;
 			}
 			
+	//max-height: 750px;
 	
 		     echo ' <div id="purchasemodal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style = "width: 900px;">
 				  <div class="modal-header">
@@ -281,7 +282,7 @@ class CustomerUtilites
 					<h3 id="myModalLabel">Shopping</h3>
 				  </div>
 				  
-				  <div class="modal-body" style = "width: 850px; max-height: 750px;">
+				  <div class="modal-body" style = "width: 850px;">
 				  
 					<div class="span8" id = "purchaseinner">
 					
@@ -302,13 +303,30 @@ class CustomerUtilites
 				 
 					</div>
 
-				<form>
+				<form id = "purchaseform">
 				  <fieldset>
 					<legend>Buy This Item</legend>
+					<span class="help-block">Select Account</span>
+					
+						<select name="accountselect" required>
+						<option value="" disabled>Select an Account</option>';
+						
+						 $result = $this->getAccountsOfCustomer();
+						 
+						 while($row = $result->fetch_assoc())
+						 {
+							
+								echo '<option value='.$row['idaccount'].'>Credit Card: '.$row['creditcardnum'].'</option>';
+							
+						 }
+						
+						echo ';
+						</select>
+					
 					<span class="help-block">Quantity</span>
 					<input type="number" min="1" max="'.$firstitemcount.'" name="qtyenter"> <br>
 					<span id = "subtotal">Total: $22,000</span> <br>
-					<button type="submit" class="btn btn-primary">Submit</button>
+					<button type="submit" class="btn btn-primary">Submit</button> <span style="color:red" id = "transerror"></span>
 				  </fieldset>
 				</form>
 					
@@ -320,6 +338,45 @@ class CustomerUtilites
 
 			</div>';
 
+	}
+	
+	function makeTransaction($itemid,$qty,$accfkey)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			date_default_timezone_set('America/New_York');
+		
+			$date = date('Y-m-d H:i:s', time());
+			
+			$params = array("siii",$date,$qty,$accfkey,$itemid);
+			$params2 = array("i",$itemid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$itemres = $this->queryhelper->executeStatement($mysqli,"SELECT unitsleft FROM advertisement WHERE idadvertisement = ?",$params2);
+			$itemrow = $itemres->fetch_assoc();
+			$amtleft = $itemrow['unitsleft'];
+			
+			if($amtleft < $qty)
+			{
+				return "out of stock";
+			}
+			
+			$newamt = $amtleft - $qty;
+			
+			$params3 = array("ii",$newamt,$itemid);
+			
+			$updateres = $this->queryhelper->executeStatement($mysqli,"UPDATE advertisement SET unitsleft = ? WHERE idadvertisement = ?",$params3);
+			
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"INSERT INTO transaction (timestamp,amtpurchased,accountfkey,advertisementfkey) VALUES (?,?,?,?)",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+			
+			
 	}
 	
 	function getItemsLeft($itemid)

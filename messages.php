@@ -153,8 +153,8 @@ include_once ("scripts/Navbar.php");
   <div class="modal-body">
   
     <form id = "newmessageform">
-
-	 <select data-placeholder="Choose a Country..." style="width:350px;" tabindex="1" name = "customerselect" required>
+	<fieldset>
+	 <select name = "customerselect" required>
             <option value="" disabled>Select A Member</option>
 			
 			<?php
@@ -174,7 +174,9 @@ include_once ("scripts/Navbar.php");
      </select>
 	 
 	 <textarea rows="4" cols="50" style = "width: 95%; resize: none;" name="newmessagetext" placeholder="Write a Message..." required></textarea>
-    
+	  <button class="btn btn-primary" type="submit" id="sendmsgmodal">Send</button>
+	  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+	</fieldset>
 	</form>
  
   </div>
@@ -182,12 +184,18 @@ include_once ("scripts/Navbar.php");
      
   
   <div class="modal-footer">
-    <button class="btn btn-primary" data-dismiss="modal" id="sendmsgmodal">Send</button>
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+   
+
 
   </div>
 </div>
    
+    <?php
+  
+	$utilites->buildAdvertisementModal(1);
+  
+  ?>
+
    
     <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
     <script src="assets/js/jquery.js"></script>
@@ -344,10 +352,7 @@ include_once ("scripts/Navbar.php");
 	 
 	 });
 	 
-	 $("#sendmsgmodal").click(function(e) {
-	 
-		
-	 $("#newmessageform").submit(function(e) {
+	  $("#newmessageform").submit(function(e) {
 	 
 		e.preventDefault();
 		
@@ -377,9 +382,7 @@ include_once ("scripts/Navbar.php");
 	 
 	 });
 	 
-	 $("#newmessageform").submit();
-	 
-	 });
+
 	 
 
 	 
@@ -440,27 +443,135 @@ include_once ("scripts/Navbar.php");
 	 
 	 }
 	
+	 
+	 	 $('.carousel').carousel({
+		interval: false
+	});
+	
+	
+	window.setTimeout(showAdvertisement, 5000);
+
+	function showAdvertisement()
+	{
+		$('#purchasemodal').modal('show');
+	}
+	
+	
+	$("[name='qtyenter'").val(1);
+	
+	$('.carousel').on('slide',function(e){
+
+		 var slideFrom = $(this).find('.active').attr("id");
+		 var slideTo = $(e.relatedTarget).attr("id");
+		 var uid = <?php  echo $id;  ?>;
+		 
+		 var darray = new Array(19,slideTo,uid);
+		 
+		 $("#transerror").text("");
+		 
+		 $.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					var amt = $("#price"+slideTo).text();
+					amt = amt.replace("Price: ","");
+					amt = amt.replace("$","");
+					amt = amt.replace(",","");
+					amt = formatCurrency(amt);
+					$("#subtotal").text("Total: " + amt);
+					
+					$("[name='qtyenter'").attr('max', msg.num);
+					$("[name='qtyenter'").val(1);
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+			
+			
+	
+	});
+	
+
+
+	
+	
+	$("[name='qtyenter'").change(function(e) {
+	
+		var id = $("#caroinner").find('.active').attr("id");
+	
+		var amt = $("#price"+id).text();
+		amt = amt.replace("Price: ","");
+		amt = amt.replace("$","");
+		amt = amt.replace(",","");
+		
+		amt = amt * $(this).val();
+		amt = formatCurrency(amt);
+		
+		$("#subtotal").text("Total: " + amt);
+		
+		
+		
+	
+	});
+	
+	$("#purchaseform").submit(function(e) {
+	
+		e.preventDefault();
+		
+		$("#transerror").text("");
+		
+		var itemid = $("#caroinner").find('.active').attr("id");
+		var amt = $("[name='qtyenter'").val();
+		var accid = $("[name='accountselect'").val();
+		var uid = <?php  echo $id;  ?>;
+		var action = 20;
+		
+		var darray = new Array(20,itemid,amt,accid,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					if(msg.res == "out of stock")
+					{
+						$("#transerror").text("Error: Out of Stock");
+					}
+					else
+					{
+						location.reload();
+					}
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+	
+	});
+	
+	
+	 function formatCurrency(total) {
+    var neg = false;
+    if(total < 0) {
+        neg = true;
+        total = Math.abs(total);
+    }
+    return (neg ? "-$" : '$') + parseFloat(total, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString();
+	}
 	
 	</script>
 	
 	
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
-			  <script src="chosen/chosen.jquery.js" type="text/javascript"></script>
-  <script src="chosen/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
-  <script type="text/javascript">
-  
-  
-    var config = {
-      '.chosen-select'           : {},
-      '.chosen-select-deselect'  : {allow_single_deselect:true},
-      '.chosen-select-no-single' : {disable_search_threshold:10},
-      '.chosen-select-no-results': {no_results_text:'Oops, nothing found!'},
-      '.chosen-select-width'     : {width:"95%"}
-    }
-    for (var selector in config) {
-      $(selector).chosen(config[selector]);
-    }
 	
-	</script>
 	  </body>
 </html>
