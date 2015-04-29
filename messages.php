@@ -108,13 +108,14 @@ include_once ("scripts/Navbar.php");
 		$utilites->buildChatSelector();
 		
 		?>
-
+		
         </ul>
+		<button class = "btn btn-large btn-primary" id = "newmessage" style = "" href="#newmessagemodal" data-toggle="modal">New Message </button>
       </div>
 		
 			<div class="span7">
 			
-			<button class = "btn btn-primary" id = "newmessage" style = "position: relative; top: 20px; right: 17px;" href="#newmessagemodal" data-toggle="modal">New Message </button>
+			
 			
 			<section id="messages" style=" height: 700px; overflow-y: scroll">
 
@@ -268,6 +269,14 @@ include_once ("scripts/Navbar.php");
 			e.stopPropagation();
 	});
 	
+	$(".acceptjoinrequest").click(function(e) {
+	
+	});
+	
+	$(".declinejoinrequest").click(function(e) {
+	
+	});
+	
 	$(".acceptcircleinv").click(function(e){
 	 
 		var cid = $(e.target).attr("id");
@@ -318,6 +327,62 @@ include_once ("scripts/Navbar.php");
 				}
 				
 			});
+		
+	 
+	 });
+	 
+	 $(".acceptjoinrequest").click(function(e) {
+	 
+		var nid = $(e.target).attr("id");
+		var uid = <?php  echo $id;  ?>;
+		var action = 23;
+		
+		var darray = new Array(action,nid,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
+		
+	 
+	 });
+	 
+	 $(".declinejoinrequest").click(function(e) {
+	 
+		var nid = $(e.target).attr("id");
+		var uid = <?php  echo $id;  ?>;
+		var action = 24;
+		
+		var darray = new Array(action,nid,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
 		
 	 
 	 });

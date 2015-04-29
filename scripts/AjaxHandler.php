@@ -23,6 +23,10 @@ ACTION CODES
 18 = Get Transactions For Account [18,aid,uid]
 19 = Get Items Left [19,itemid,uid]
 20 = Buy Item [20,itemid,qty,accid,uid]
+21 = Search Circle [21,input,uid]
+22 = Request Join Circle [22,circleid,uid]
+23 = Accept New Circle Mem [23,nid,uid]
+24 = Decline New Circle Mem [24,nid,uid]
 
 
 */
@@ -302,7 +306,7 @@ error_reporting(-1);
 		
 	}
 	
-	//[20,itemid,qty,uid]
+
 	if($data[0] == 20)
 	{
 		$utilites = new CustomerUtilites($data[4],-1);
@@ -313,6 +317,47 @@ error_reporting(-1);
 		
 		
 	}
+	
+	//[21,input,uid]
+	if($data[0] == 21)
+	{
+		$utilites = new CustomerUtilites($data[2],-1);
+		
+		$htmlres = $utilites->findCircles($data[1]);
+		
+		echo json_encode(array('result' => 'success', 'html' => $htmlres));
+		
+		
+	}
+	//[22,circleid,uid]
+	if($data[0] == 22)
+	{
+		$utilites = new CustomerUtilites($data[2],-1);
+		
+		$htmlres = $utilites->requestToJoinCircle($data[1]);
+		
+		echo json_encode(array('result' => 'success'));
+	}
+	
+	//[23,nid,uid]
+	if($data[0] == 23)
+	{
+		$utilites = new CustomerUtilites($data[2],-1);
+		
+		$utilites->acceptCircleRequest($data[1]);
+		
+		echo json_encode(array('result' => 'success'));
+	}
+	
+	if($data[0] == 24)
+	{
+		$utilites = new CustomerUtilites($data[2],-1);
+		
+		$utilites->declineCircleRequest($data[1]);
+		
+		echo json_encode(array('result' => 'success'));
+	}
+	
 	
 
 

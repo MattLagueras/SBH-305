@@ -204,19 +204,24 @@ include ("scripts/Navbar.php");
 	  
 	  
 		echo $utilites->getInvitedCards($circleid);
+		
+		echo '</div>';
 	}
 		
 	  ?>
 	  
-	  </div>
+	 
 	  
 	  
 	  <?php
 	  if($isadmin == true)
 	  {
 		echo '
-	  <div role="tabpanel" class="tab-pane fade" id="requests" aria-labelledBy="requests-tab">
-	  </div>';
+	  <div role="tabpanel" class="tab-pane fade" id="requests" aria-labelledBy="requests-tab">';
+
+		echo $utilites->getRequestedCards($circleid);
+
+	  echo '</div>';
 	  }
 	  ?>
 	  
@@ -783,6 +788,62 @@ include ("scripts/Navbar.php");
 				}
 				
 			});
+		
+	 
+	 });
+	 
+	 $(".acceptjoinrequest").click(function(e) {
+	 
+		var nid = $(e.target).attr("id");
+		var uid = <?php  echo $id;  ?>;
+		var action = 23;
+		
+		var darray = new Array(action,nid,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
+		
+	 
+	 });
+	 
+	 $(".declinejoinrequest").click(function(e) {
+	 
+		var nid = $(e.target).attr("id");
+		var uid = <?php  echo $id;  ?>;
+		var action = 24;
+		
+		var darray = new Array(action,nid,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
 		
 	 
 	 });

@@ -115,6 +115,10 @@ class CustomerUtilites
               <li '; if($activetab == 5) { echo 'class="active"';}  echo'>
                 <a href="./plus.html">Purchases</a>
               </li>
+			  
+			  <li '; if($activetab == 6) { echo 'class="active"';}  echo'>
+                <a href="./searchcircles.php">Search Circles</a>
+              </li>
 
             </ul>
 			
@@ -336,6 +340,7 @@ class CustomerUtilites
 				  <div class="modal-footer">
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
 
+			</div>
 			</div>';
 
 	}
@@ -510,6 +515,95 @@ class CustomerUtilites
 		
 		return $result;
 	
+	}
+	
+	function findCircles($search)
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$params = array("siii",$search,$this->uid,$this->uid,$this->uid);
+		
+		$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM circle c
+																WHERE
+																c.name LIKE CONCAT('%', ?, '%')
+																AND
+																c.idcircle NOT IN(
+																 SELECT cm.idcircle FROM circlemembers cm WHERE cm.customer_idcustomer = ?
+																 UNION
+																 SELECT rj.circle_idcircle FROM requestjoincircle rj WHERE rj.customer_idcustomer = ?
+																 UNION 
+																 SELECT ic.circle_idcircle FROM invitedtocircle ic WHERE ic.customer_idcustomer = ?)",$params);
+																 
+		
+		
+		$htmlres = "";
+		
+		while($row = $result->fetch_assoc())
+		{
+			$custrow = $this->getCustomerRowById($row['customer_idcustomer'],false);
+			
+			$pageid = $this->getPageOfCircle($row['idcircle'],false);
+			
+			
+			$params2 = array("i",$pageid);
+			$result2 = $this->queryhelper->executeStatement($mysqli,"SELECT COUNT(*) AS postcount FROM posts WHERE fkpage = ?",$params2);
+			$row2 = $result2->fetch_assoc();
+			$postcount = $row2['postcount'];
+			
+			
+			
+			$params3 = array("i",$row['idcircle']);
+			$result3 = $this->queryhelper->executeStatement($mysqli,"SELECT COUNT(*) AS membercount FROM circlemembers WHERE idcircle = ?",$params3);
+			$row3 = $result3->fetch_assoc();
+			$membercount = $row3['membercount'];
+			
+			$name = "'".$custrow['firstname'].' '.$custrow['lastname']."'";
+		
+			$htmlres .= '<div class="card hovercard" style = "display: inline-block; margin-right: 50px;">
+		   <img src="assets/img/the-simpsons.png" alt=""/>
+		   <div class="avatar">
+			  <img src="assets/img/avatar_homer.png" alt="" />
+		   </div>
+		   <div class="info">
+			  <div class="title">
+				 '.$row['name'].'
+			  </div>
+			  <div class="desc">Owner: '.$custrow['firstname'].' '.$custrow['lastname'].'</div>
+			  <div class="desc">'.$postcount.' Posts</div>
+			  <div class="desc">'.$membercount.' Members</div>
+		   </div>
+		   <div class="bottom">
+			  <button class="btn" onclick = "joincircle('.$row['idcircle'].')">Join</button><br>
+			  <button onclick = "showMessage('.$custrow['idcustomer'].','.$name.')" class="btn msgowner">Message Owner</button>
+		   </div>
+		</div>';
+		}
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		return $htmlres;
+		
+	
+	}
+	
+	function getPageOfCircle($circleid, $trans)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			if($trans == true)
+			$this->queryhelper->beginTransaction($mysqli);
+		
+			$p1 = array("i",$circleid);
+			$res1 = $this->queryhelper->executeStatement($mysqli,"SELECT idpage FROM pages WHERE fkcircle = ? ",$p1);
+			
+			if($trans == true)
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			$row = $res1->fetch_assoc();
+			return $row['idpage'];
 	}
 	
 	function removeCustomerFromCircle($circleid,$custid)
@@ -799,6 +893,34 @@ class CustomerUtilites
 	
 	}
 	
+	function requestToJoinCircle($circleid)
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+	
+		$params = array("ii",$this->uid,$circleid);
+		$params2 = array("i",$circleid);
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$result =  $this->queryhelper->executeStatement($mysqli,"SELECT name, customer_idcustomer FROM circle WHERE idcircle = ?",$params2);
+		$circlerow = $result->fetch_assoc();
+		
+		$circlename = $circlerow['name'];
+		
+		$custrowowner = $this->getCustomerRowById($circlerow['customer_idcustomer'], false);
+		$custrowthis = $this->getCustomerRowById($this->uid, false);
+		
+		$params3 = array("ssiii","Circle Join Invitation","".$custrowthis['firstname']." ".$custrowthis['lastname']." wants to join your circle ".$circlerow['name']." ",$circlerow['customer_idcustomer'],$circleid,$this->uid);
+		
+		$result1 = $this->queryhelper->executeStatement($mysqli,"INSERT INTO requestjoincircle (customer_idcustomer,circle_idcircle) VALUES (?,?)",$params);
+		$result2 = $this->queryhelper->executeStatement($mysqli,"INSERT INTO notification (type,title,text,customer_idcustomer,circle_idcircle,invitedcustomer) VALUES (2,?,?,?,?,?)",$params3);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		return $result;
+	}
+	
 	function acceptCircleInv($circleid)
 	{
 		$con = DBcon::getDBcon();
@@ -834,6 +956,58 @@ class CustomerUtilites
 		$this->queryhelper->commitTransaction($mysqli);
 		
 		return $result1;
+	
+	}
+	
+	function acceptCircleRequest($idnotification)
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$params1 = array("i",$idnotification);
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$notres = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM notification WHERE idnotification = ?",$params1);
+		$notirow = $notres->fetch_assoc();
+		
+		$circleid = $notirow['circle_idcircle'];
+		$custid = $notirow['invitedcustomer'];
+		
+		$params = array("ii",$circleid,$custid);
+		
+		$result =  $this->queryhelper->executeStatement($mysqli,"INSERT INTO circlemembers (idcircle,customer_idcustomer) VALUES (?,?)",$params);
+		$result2 = $this->queryhelper->executeStatement($mysqli,"DELETE FROM requestjoincircle WHERE circle_idcircle = ? AND customer_idcustomer = ?",$params);
+		$result3 = $this->queryhelper->executeStatement($mysqli,"DELETE FROM notification WHERE idnotification = ?",$params1);
+		
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+	
+	}
+	
+	function declineCircleRequest($idnotification)
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$params1 = array("i",$idnotification);
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$notres = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM notification WHERE idnotification = ?",$params1);
+		$notirow = $notres->fetch_assoc();
+		
+		$circleid = $notirow['circle_idcircle'];
+		$custid = $notirow['invitedcustomer'];
+		
+		$params = array("ii",$circleid,$custid);
+		
+		$result2 = $this->queryhelper->executeStatement($mysqli,"DELETE FROM requestjoincircle WHERE circle_idcircle = ? AND customer_idcustomer = ?",$params);
+		$result3 = $this->queryhelper->executeStatement($mysqli,"DELETE FROM notification WHERE idnotification = ?",$params1);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
 	
 	}
 	
@@ -873,6 +1047,25 @@ class CustomerUtilites
                                      </div>
                                   </li>';
 					}
+					
+					if($row['type'] == 2)
+					{
+									echo '<li>
+										 <span class="title">'.$row['title'].'</span>
+										 <div class="media">
+											<a class="pull-left" href="#">
+											   <img class="media-object" data-src="holder.js/48x48/#fff:#444">
+											</a>
+											<div class="media-body">
+											 '.$row['text'].'
+											</div>
+											<div class="card-actions">
+											<button class="btn btn-primary acceptjoinrequest" id = "'.$row['idnotification'].'">Accept</button>
+											<button class="btn btn-warning declinejoinrequest" id = "'.$row['idnotification'].'">Decline</button>
+											</div>
+										 </div>
+									  </li>';
+					}
 		}
 		
 	}
@@ -886,6 +1079,42 @@ class CustomerUtilites
 		
 		$params = array("i",$circleid);
 		$result = $this->queryhelper->executeStatement($mysqli,"SELECT customer_idcustomer FROM invitedtocircle WHERE circle_idcircle = ?",$params);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		$cards = "";
+		$count = 0;
+		
+		$style = "";
+		
+		while($row = $result->fetch_assoc())
+		{
+			if($count > 0 && $count % 4 == 0)
+			{
+				$style="style='margin-left:0px;'";
+			}
+			else
+			{
+				$style="";
+			}
+		
+			$cards .= $this->generateCardById($row['customer_idcustomer'],$style);
+			$count++;
+		}
+		
+		return $cards;
+		
+	}
+	
+	function getRequestedCards($circleid)
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$params = array("i",$circleid);
+		$result = $this->queryhelper->executeStatement($mysqli,"SELECT customer_idcustomer FROM requestjoincircle WHERE circle_idcircle = ?",$params);
 		
 		$this->queryhelper->commitTransaction($mysqli);
 		

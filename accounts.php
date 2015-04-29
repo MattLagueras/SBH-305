@@ -305,6 +305,62 @@ include_once ("scripts/Navbar.php");
 	 
 	 });
 	 
+	 $(".acceptjoinrequest").click(function(e) {
+	 
+		var nid = $(e.target).attr("id");
+		var uid = <?php  echo $id;  ?>;
+		var action = 23;
+		
+		var darray = new Array(action,nid,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
+		
+	 
+	 });
+	 
+	 $(".declinejoinrequest").click(function(e) {
+	 
+		var nid = $(e.target).attr("id");
+		var uid = <?php  echo $id;  ?>;
+		var action = 24;
+		
+		var darray = new Array(action,nid,uid);
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		
+		
+	 
+	 });
+	 
 	 $("#createcircle").submit(function(e){
 	 
 		e.preventDefault();
