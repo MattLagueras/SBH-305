@@ -129,9 +129,8 @@ include ("scripts/Navbar.php");
 
 	<header class="jumbotron" id="overview">
   <div class="container">
-
     <h1 style = "font-size: 350%; position: relative; right: 17%; text-align: center;"><?php echo $row2['name'];  ?></h1>
-
+	<button id = "leavecircle" style = "position: relative; right: 25%;" class="btn btn-warning">Leave</button>
   </div>
 </header>
 
@@ -352,10 +351,51 @@ include ("scripts/Navbar.php");
 
 
 
+  <div id="newmessagemodal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">New Message</h3>
+  </div>
+  
+  <div class="modal-body">
+  
+    <form id = "newmessageform">
+	<fieldset>
+	 <select name disabled = "customerselect" required>
+            <option value="" disabled>Select A Member</option>
+			
+			<?php
+			
+				$result = $utilites->getAllCustomer();
+				
+				while($row = $result->fetch_assoc())
+				{
+					if($row['idcustomer'] != $id)
+					{
+						echo '<option value="'.$row['idcustomer'].'" >'.$row['firstname'].' '.$row['lastname'].'</option>';
+					}
+				}
+			
+			?>
+			
+     </select>
+	 
+	 <textarea rows="4" cols="50" style = "width: 95%; resize: none;" name="newmessagetext" placeholder="Write a Message..." required></textarea>
+	  <button class="btn btn-primary" type="submit" id="sendmsgmodal">Send</button>
+	  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+	</fieldset>
+	</form>
+ 
+  </div>
+
+     
+  
+  <div class="modal-footer">
+   
 
 
-
-   </div>
+  </div>
+</div>
 
 
 
@@ -369,6 +409,8 @@ include ("scripts/Navbar.php");
 	$utilites->buildAdvertisementModal(1);
   
   ?>
+  
+  
 
 
 
@@ -403,11 +445,14 @@ include ("scripts/Navbar.php");
 	var deletecomment;
 	
 	
+	
+	
 	$("#namecircleinput").click(function(e) {
 			
 			e.stopPropagation();
 			
 	});
+	
 	
 	$('#searchpeopleform').submit(function(e) {
 	
@@ -512,6 +557,7 @@ include ("scripts/Navbar.php");
 	});
 	
 	
+	
 	$('.like-button-comment').click(function(e) {
 			e.preventDefault();
 			
@@ -550,6 +596,47 @@ include ("scripts/Navbar.php");
 			
 	});
 	
+	$("#leavecircle").click(function(e) {
+	
+		
+	
+	});
+	
+	function newmessage(id)
+	{
+		$("[name='customerselect'").val(id);
+	}
+	
+	$("#newmessageform").submit(function(e) {
+	 
+		e.preventDefault();
+		
+		var messagecontent = $("[name='newmessagetext'").val();
+		var uid = <?php  echo $id;  ?>;
+		var rid = $("[name='customerselect'").val();
+		var action = 16;
+		
+		var darray = new Array(action,messagecontent,rid,uid);
+		
+			
+			$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+	 
+	 });
+	 
 	
 	
 	$('.comment-drop').click(function(e) {

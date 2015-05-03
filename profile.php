@@ -107,6 +107,53 @@ include_once ("scripts/Navbar.php");
             <h1>Profile</h1>
 			</div>
 			
+			<form id="addpref">
+			
+			<label>Add Prefrences</label>
+			<select data-placeholder="Add a Preference" required class="chosen-select" multiple style="width:350px;" tabindex="4" id = "addselect">
+			
+			<?php
+			
+			$result = $utilites->listAvaliableTypes();
+			
+			while($row = $result->fetch_assoc())
+			{
+				echo '<option value="'.$row['idtype'].'">'.$row['content'].'</option>';
+			}
+			
+			?>
+			
+			
+			</select>
+			
+			<button type="submit" class="btn">Submit</button>
+			
+			</form>
+			
+			
+			<form id="removepref">
+			
+			<label>Remove Prefrences</label>
+			<select data-placeholder="Add a Preference" required class="chosen-select" multiple style="width:350px;" tabindex="4" id = "removeselect">
+			
+			<?php
+			
+			$result = $utilites->listCustomerPreferences();
+			
+			while($row = $result->fetch_assoc())
+			{
+				echo '<option value="'.$row['idtype'].'">'.$row['content'].'</option>';
+			}
+			
+			?>
+			
+			
+			</select>
+			
+			<button type="submit" class="btn">Submit</button>
+			
+			</form>
+			
 			</section>
 		
 		
@@ -239,9 +286,69 @@ include_once ("scripts/Navbar.php");
 	 
 	 });
 	 
+	 
+	 $("#addpref").submit(function(e) {
+	 
+		e.preventDefault();
+		
+
+		$('#addselect :selected').each(function(i, selected){ 
+		  var value = $(selected).val(); 
+		  
+		  var darray = new Array(27,value,<?php echo $id;  ?>);
+		  
+		  $.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		  
+		});
+		
+		location.reload();
+	 
+	 });
 	
 	 
-
+	 $("#removepref").submit(function(e) {
+	 
+		e.preventDefault();
+		
+		$('#removeselect :selected').each(function(i, selected){ 
+		  var value = $(selected).val(); 
+		  
+		  var darray = new Array(28,value,<?php echo $id;  ?>);
+		  
+		  $.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+				
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+		  
+		});
+		
+		location.reload();
+	 
+	 });
 	 
 	 
 	

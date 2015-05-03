@@ -95,6 +95,11 @@
 			  window.location.replace("http://localhost/SBH/home.php");
             }
 			
+			if(result.message == "rep")
+            {
+			  window.location.replace("http://localhost/SBH/rephome.php");
+            }
+			
 			if(result.message == "manager")
             {
 			  window.location.replace("http://localhost/SBH/managerhome.php");

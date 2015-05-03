@@ -27,6 +27,10 @@ ACTION CODES
 22 = Request Join Circle [22,circleid,uid]
 23 = Accept New Circle Mem [23,nid,uid]
 24 = Decline New Circle Mem [24,nid,uid]
+25 = Leave Circle
+26 = Delete Circle
+27 = Add Preference
+28 = Delete Preference
 
 
 */
@@ -354,6 +358,24 @@ error_reporting(-1);
 		$utilites = new CustomerUtilites($data[2],-1);
 		
 		$utilites->declineCircleRequest($data[1]);
+		
+		echo json_encode(array('result' => 'success'));
+	}
+	
+	if($data[0] == 27)
+	{
+		$utilites = new CustomerUtilites($data[2],-1);
+		
+		$utilites->addPreference($data[1]);
+		
+		echo json_encode(array('result' => 'success'));
+	}
+	
+	if($data[0] == 28)
+	{
+		$utilites = new CustomerUtilites($data[2],-1);
+		
+		$utilites->removePreference($data[1]);
 		
 		echo json_encode(array('result' => 'success'));
 	}

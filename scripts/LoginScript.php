@@ -59,10 +59,32 @@ include_once ("DBcon.php");
 		}
 		else
 		{
-		$res = array('message' => "error");
-		echo json_encode($res);
-		$con->closeConnection();
+		
+		
+			$query = mysqli_prepare($mysqli,"SELECT * FROM customerrep WHERE email = ? AND password = ?");
+			
+			mysqli_stmt_bind_param($query,"ss",$email,$pass);
+			mysqli_stmt_execute($query);
+			
+			$result = $query->get_result();
+				
+				if(mysqli_num_rows($result) > 0)
+				{
+				$row = $result->fetch_assoc();
+				$sessionManager->setSessionVar("userid",$row['idcustomerrep']);
+				$sessionManager->setSessionVar("role","rep");
+				$res = array('message' => "rep");
+				echo json_encode($res);
+				$con->closeConnection();
+				}
+				else
+				{
+				$res = array('message' => "error");
+				echo json_encode($res);
+				$con->closeConnection();
+				}
 		}
+		
 	}
 	
 	

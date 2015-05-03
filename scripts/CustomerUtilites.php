@@ -226,6 +226,8 @@ class CustomerUtilites
 			return $result;
 	}
 	
+
+	
 	function buildAdvertisementModal($mode)
 	{
 			/*mode 1 is all advertisement, mode 2 is by prefrence, mode 3 is by past purchase*/
@@ -234,7 +236,7 @@ class CustomerUtilites
 			
 			if($mode == 1)
 			{
-				$result = $this->listAllAdvertisements();
+				$result = $this->listAdvertisementsByPref();
 			}
 			
 			$slidelist = "";
@@ -420,7 +422,85 @@ class CustomerUtilites
 	
 	function listAdvertisementsByPref()
 	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("ii",$this->uid,$this->uid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT a.* FROM advertisement a
+																	WHERE
+																	a.typefkey IN (SELECT hp.type_idtype FROM haspreference hp WHERE hp.customer_idcustomer = ?)
+																	UNION
+																	SELECT a2.* FROM advertisement a2
+																	WHERE
+																	a2.typefkey NOT IN (SELECT hp.type_idtype FROM haspreference hp WHERE hp.customer_idcustomer = ?)",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+			
+	}
 	
+	function listCustomerPreferences()
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("i",$this->uid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM type WHERE idtype IN (SELECT type_idtype FROM haspreference WHERE customer_idcustomer = ?)",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+	}
+	
+	function listAvaliableTypes()
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("i",$this->uid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM type WHERE idtype NOT IN (SELECT type_idtype FROM haspreference WHERE customer_idcustomer = ?)",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+	}
+	
+	function addPreference($typeid)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("ii",$typeid,$this->uid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"INSERT INTO haspreference (type_idtype,customer_idcustomer) VALUES (?,?)",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+	}
+	
+	function removePreference($typeid)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("ii",$typeid,$this->uid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"DELETE FROM haspreference WHERE type_idtype = ? AND customer_idcustomer = ?",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
 	}
 	
 	function listAdvertisementsByPastPurchse()
@@ -852,8 +932,12 @@ class CustomerUtilites
 				  <a class="title" href="#">'.$row['firstname'].' '.$row['lastname'].'</a>
 				  <div class="desc">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
 			   </div>
-			   <div class="card-bottom">
-				  <button class="btn btn-small">Message</button>
+			   <div class="card-bottom">';
+				  if($this->uid != $row['idcustomer'])
+					{
+				      echo '<button class="btn btn-small" href="#newmessagemodal" data-toggle="modal" onclick="newmessage('.$row['idcustomer'].')">Message</button>';
+				    }
+					echo '
 				  </div>
 			</div>';
 			
@@ -1160,6 +1244,9 @@ class CustomerUtilites
 		
 		while($row = $result->fetch_assoc())
 		{
+			if($row['idcustomer'] == $this->uid)
+				continue;
+		
 		
 			if($count > 0 && $count % 3 == 0)
 				{
@@ -1180,8 +1267,11 @@ class CustomerUtilites
 				  <a class="title" href="#">'.$row['firstname'].' '.$row['lastname'].'</a>
 				  <div class="desc">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
 			   </div>
-			   <div class="card-bottom">
-				  <button class="btn btn-small">Message</button>';
+			   <div class="card-bottom">';
+
+				      $htmlres.= '<button class="btn btn-small" href="#newmessagemodal" data-toggle="modal" onclick="newmessage('.$row['idcustomer'].')">Message</button>';
+
+					
 				  
 				  $params2 = array("ii",$row['idcustomer'],$circleid);
 				  
@@ -1268,8 +1358,12 @@ class CustomerUtilites
 				  <a class="title" href="#">'.$row['firstname'].' '.$row['lastname'].'</a>
 				  <div class="desc">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
 			   </div>
-			   <div class="card-bottom">
-				  <button class="btn btn-small">Message</button>
+			   <div class="card-bottom">';
+					if($this->uid != $row['idcustomer'])
+					{
+				      echo '<button class="btn btn-small" href="#newmessagemodal" data-toggle="modal" onclick="newmessage('.$row['idcustomer'].')">Message</button>';
+				    }
+				echo '
 			   </div>
 			</div>';
 			
