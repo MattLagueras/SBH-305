@@ -107,6 +107,47 @@ include_once ("scripts/Navbar.php");
             <h1>Profile</h1>
 			</div>
 			
+			<?php
+			
+			$row = $utilites->getCustomerRowById($id,true);
+			date_default_timezone_set('America/New_York');
+			
+				$infotable = '<table class="table table-striped table-hover">
+              <thead>
+                <tr>
+				  <th>First Name</th>
+				  <th>Last Name</th>				  
+				  <th>Address</th>
+				  <th>City</th>
+				  <th>State</th>
+				  <th>Zip</th>
+				  <th>Phone</th>
+				  <th>Birthdate</th>
+				  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody>';
+			  
+			  		$infotable .= '<tr>
+			  <td>'.$row['firstname'].'</td>
+			  <td>'.$row['lastname'].'</td>
+			  <td>'.$row['address'].'</td>
+			  <td>'.$row['city'].'</td>
+			  <td>'.$row['state'].'</td>
+			  <td>'.$row['zip'].'</td>
+			  <td>'.$row['telephone'].'</td>
+			  <td>'.date('m/d/Y', strtotime($row['birthdate'])).'</td>
+			  <td>'.$row['email'].'</td>
+			  </tr>';
+		
+		
+		$infotable .= '</tbody></table>';
+		echo $infotable;
+			  
+			  
+			
+			?>
+			
 			<form id="addpref">
 			
 			<label>Add Prefrences</label>
