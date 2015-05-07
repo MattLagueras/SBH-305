@@ -19,14 +19,14 @@ include_once ("scripts/Navbar.php");
 	
 	if($id == "invalid")
 	{
-		$url = "http://localhost/SBH/login.php";
+		$url = "login.php";
 		$statuscode = 403;
 		header('Location: ' . $url, true, $statusCode);
 	}
 	
 	if($role != "manager")
 	{
-		$url = "http://localhost/SBH/login.php";
+		$url = "login.php";
 		$statuscode = 403;
 		header('Location: ' . $url, true, $statusCode);
 	}

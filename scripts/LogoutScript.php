@@ -6,7 +6,7 @@ $sessionManager = SessionManager::getManager();
 	$sessionManager->startSession();
 	$sessionManager->endSession();
 	
-	$url = "http://localhost/SBH/index.html";
+	$url = "../index.html";
 		$statuscode = 100;
 		header('Location: ' . $url, true, $statusCode);
 

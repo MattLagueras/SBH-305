@@ -92,17 +92,17 @@
         {
             if(result.message == "customer")
             {
-			  window.location.replace("http://localhost/SBH/home.php");
+			  window.location.replace("home.php");
             }
 			
 			if(result.message == "rep")
             {
-			  window.location.replace("http://localhost/SBH/rephome.php");
+			  window.location.replace("rephome.php");
             }
 			
 			if(result.message == "manager")
             {
-			  window.location.replace("http://localhost/SBH/managerhome.php");
+			  window.location.replace("managerhome.php");
             }
         }
 

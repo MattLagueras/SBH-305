@@ -19,7 +19,7 @@ include_once ("scripts/RepUtilites.php");
 	
 	if($id == "invalid" || $role != "rep")
 	{
-		$url = "http://localhost/SBH/login.php";
+		$url = "login.php";
 		$statuscode = 403;
 		header('Location: ' . $url, true, $statusCode);
 	}

@@ -22,7 +22,7 @@ include ("scripts/Navbar.php");
 	
 	if($id == "invalid")
 	{
-		$url = "http://localhost/SBH/login.php";
+		$url = "login.php";
 		$statuscode = 403;
 		header('Location: ' . $url, true, $statusCode);
 	}
@@ -615,7 +615,7 @@ include ("scripts/Navbar.php");
 				data: {data:darray},
 				success: function(msg){
 					
-					location.assign("http://localhost/SBH/home.php")
+					location.assign("home.php")
 					
 				},
 				error: function(msg) {
