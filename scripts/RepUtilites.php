@@ -67,6 +67,21 @@ class RepUtilites
 		
 	}
 	
+	function getRepList()
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$this->queryhelper->beginTransaction($mysqli);
+			
+		$result = $mysqli->query("SELECT * FROM customerrep");
+												 
+		$this->queryhelper->commitTransaction($mysqli);
+			
+		return $result;
+		
+	}
+	
 	
 	function createAdvertisement($name,$company,$imgloc,$description,$unitprice,$unitsleft,$type)
 	{
@@ -229,6 +244,123 @@ class RepUtilites
 	
 	}
 	
+	function getAdvertisements()
+	{
+		
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("i",$this->uid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM advertisement WHERE repfkey = ?",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+	
+	}
+	
+	function deleteAdvertisement($advid)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("i",$advid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"DELETE FROM advertisement WHERE idadvertisement = ?",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+			
+			
+	}
+	
+	function getCustomerSuggestions($custid)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("i",$custid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM suggestionlist WHERE customer_idcustomer = ?",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+			
+	}
+	
+	function getSuggestableItems($custid)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("i",$custid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM advertisement WHERE idadvertisement NOT IN (SELECT advfkey FROM suggestionlist WHERE customer_idcustomer = ?)",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+	}
+	
+	function suggestItem($custid,$advkey,$repkey)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("iii",$custid,$advkey,$repkey);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"INSERT INTO suggestionlist (customer_idcustomer,advfkey,rep_idrep) VALUES (?,?,?)",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+	}
+	
+	function removeSuggestItem($custid,$advkey)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("ii",$custid,$advkey);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"DELETE FROM suggestionlist WHERE customer_idcustomer = ? AND advfkey = ?",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+	}
+	
+	function getRepRow($repid)
+	{
+		$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("i",$repid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM customerrep WHERE idcustomerrep = ?",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result->fetch_assoc();
+	}
+	
 	function echoNav($activetab)
 	{
 		$con = DBcon::getDBcon();
@@ -252,7 +384,7 @@ class RepUtilites
       <div class="navbar-inner">
 		 <div class = "row-fluid" >
 		  <div class="span1 offset2">
-          <a class="brand" href="./index.html"><img src="assets/img/SBHlogo.jpg" width="40" height="40" ></a>
+          <a class="brand" href="./rephome.php"><img src="assets/img/SBHlogo.jpg" width="40" height="40" ></a>
 		  </div>
 		 <ul class="nav" style="position: relative; top: 10px;">
 		
@@ -270,9 +402,16 @@ class RepUtilites
               <li '; if($activetab == 3) { echo 'class="active"';}  echo'>
                 <a href="./mailinglists.php">Mailing Lists</a>
               </li>
-              <li '; if($activetab == 4) { echo 'class="active"';}  echo'>
+			  <li '; if($activetab == 4) { echo 'class="active"';}  echo'>
+                <a href="./suggestionlist.php">Suggestion Lists</a>
+              </li>
+              <li '; if($activetab == 5) { echo 'class="active"';}  echo'>
                 <a href="./editcustomers.php">Customers</a>
               </li>
+			  <li '; if($activetab == 6) { echo 'class="active"';}  echo'>
+                <a href="./rephelp.php">Help</a>
+              </li>
+
 			  
 
             </ul>

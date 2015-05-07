@@ -46,8 +46,8 @@ include_once ("scripts/Navbar.php");
 
       <meta name="description" content="Bootplus : Sleek, intuitive, and powerful Google styled front-end framework for faster and easier web development" />
       <meta name="keywords" content="bootplus, google plus, google+, plus, bootstrap, framework, web framework, css3, html5" />
-      <meta name="author" content="AozoraLabs by Marcello Palmitessa"/>
-      <link rel="publisher" href="https://plus.google.com/117689250782136016574">
+      
+      
 
       <!-- Le styles -->
       <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,700' rel='stylesheet' type='text/css'>
@@ -72,7 +72,7 @@ include_once ("scripts/Navbar.php");
       <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
       <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
                     <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
-                                   <link rel="shortcut icon" href="assets/ico/favicon.png">
+                                   <link rel="shortcut icon" href="assets/ico/SBHlogo.jpg">
 								   
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 

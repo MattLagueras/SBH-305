@@ -32,7 +32,7 @@ include_once ("scripts/RepUtilites.php");
 <html lang="en">
    <head>
       <meta charset="utf-8">
-      <title>Home</title>
+      <title>Mailing Lists</title>
       <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,7 +89,7 @@ include_once ("scripts/RepUtilites.php");
 
 <?php
 
-$utilites->echoNav(0);
+$utilites->echoNav(3);
 
 ?>
 
@@ -103,52 +103,45 @@ $utilites->echoNav(0);
 		<section>
 		
 		<div class="page-header">
-        <h1>Your Information</h1>
+        <h1>Mailing List</h1>
 		</div>
 		
 		<?php
 		
-		$row = $utilites->getRepRow($id);
-		date_default_timezone_set('America/New_York');
+		$result = $utilites->getCustomerList();
 		
-		$infotable = '<table class="table table-striped table-hover">
+		$mailtable = '<table class="table table-striped table-hover">
               <thead>
                 <tr>
 				  <th>First Name</th>
 				  <th>Last Name</th>				  
-				  <th>SSN</th>
-				  <th>Address</th>
-				  <th>City</th>
-				  <th>State</th>
-				  <th>Zip</th>
-				  <th>Phone</th>
-				  <th>State Date</th>
 				  <th>Email</th>
                 </tr>
               </thead>
               <tbody>';
-		
-		$infotable .= '<tr>
+			  
+		while($row = $result->fetch_assoc())
+		{
+			$mailtable .= '<tr>
 			  <td>'.$row['firstname'].'</td>
 			  <td>'.$row['lastname'].'</td>
-			  <td>'.$row['ssn'].'</td>
-			  <td>'.$row['address'].'</td>
-			  <td>'.$row['city'].'</td>
-			  <td>'.$row['state'].'</td>
-			  <td>'.$row['zip'].'</td>
-			  <td>'.$row['telephone'].'</td>
-			  <td>'.date('m/d/Y', strtotime($row['startdate'])).'</td>
 			  <td>'.$row['email'].'</td>
 			  </tr>';
+			  
+		}
 		
+		$mailtable .=  "</tbody></table>";
 		
-		$infotable .= '</tbody></table>';
-		echo $infotable;
+		echo $mailtable;
+		
 		?>
+			
+			
 		
 		</section>
 		
 		</div>
+		
 		</div>
 		
 		
@@ -175,6 +168,31 @@ $utilites->echoNav(0);
     <script src="assets/js/google-code-prettify/prettify.js"></script>
 
     <script src="assets/js/application.js"></script>
+	
+	
+
+	
+  			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
+			  <script src="chosen/chosen.jquery.js" type="text/javascript"></script>
+  <script src="chosen/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
+  
+  
+  <script>
+  
+  var script = "scripts/AjaxHandlerRep.php";
+  
+
+  
+
+  
+  </script>
+  
+  
+  
+
+	
+
+	
 
 </body>
 </html>

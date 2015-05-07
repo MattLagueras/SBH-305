@@ -32,7 +32,7 @@ include_once ("scripts/RepUtilites.php");
 <html lang="en">
    <head>
       <meta charset="utf-8">
-      <title>Home</title>
+      <title>Help</title>
       <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,7 +89,7 @@ include_once ("scripts/RepUtilites.php");
 
 <?php
 
-$utilites->echoNav(0);
+$utilites->echoNav(6);
 
 ?>
 
@@ -103,52 +103,32 @@ $utilites->echoNav(0);
 		<section>
 		
 		<div class="page-header">
-        <h1>Your Information</h1>
+        <h1>Welcome</h1>
 		</div>
 		
-		<?php
+		<p>Hello, This is the help section for customer representatives.  We will outline your functionality and how to use each page </p>
 		
-		$row = $utilites->getRepRow($id);
-		date_default_timezone_set('America/New_York');
+		<h3>Advertisement</h3>
+		<p>This page allows you to create and delete advertisements.  Simply fill out the required fields to create an advertisement, you will also need to upload a picture for the advertisement.  Try to choose a large image</p>
+		</p>You may also delete an advertisement you have made by selecting it from the dropdown list</p>
 		
-		$infotable = '<table class="table table-striped table-hover">
-              <thead>
-                <tr>
-				  <th>First Name</th>
-				  <th>Last Name</th>				  
-				  <th>SSN</th>
-				  <th>Address</th>
-				  <th>City</th>
-				  <th>State</th>
-				  <th>Zip</th>
-				  <th>Phone</th>
-				  <th>State Date</th>
-				  <th>Email</th>
-                </tr>
-              </thead>
-              <tbody>';
+		<h3>Transactions</h3>
+		<p>This page allows you to see the transitions that are occurring on the site.  Simply select a customer from the dropdown menu to view his/her transitions</p>
+			
+		<h3>Mailing Lists</h3>
+		<p>Here you can obtain a mailing list of all customers registered for you to use </p>
 		
-		$infotable .= '<tr>
-			  <td>'.$row['firstname'].'</td>
-			  <td>'.$row['lastname'].'</td>
-			  <td>'.$row['ssn'].'</td>
-			  <td>'.$row['address'].'</td>
-			  <td>'.$row['city'].'</td>
-			  <td>'.$row['state'].'</td>
-			  <td>'.$row['zip'].'</td>
-			  <td>'.$row['telephone'].'</td>
-			  <td>'.date('m/d/Y', strtotime($row['startdate'])).'</td>
-			  <td>'.$row['email'].'</td>
-			  </tr>';
+		<h3>Suggestion Lists</h3>
+		<p>This page allows you to build custom suggestion lists for any customer registered.  First select the desired customer from the dropdown.  Then simply add or remove items to suggest using the dropdown menus</p>
+		<p>Note that each customer cannot be suggested the same item more than once</p>
 		
-		
-		$infotable .= '</tbody></table>';
-		echo $infotable;
-		?>
+		<h3>Customers</h3>
+		<p>Here you may add, edit, and remove customers from the site.  Simply fill out the form to add a customer, or select a customer from the dropdown on the right to edit/delete</p>
 		
 		</section>
 		
 		</div>
+		
 		</div>
 		
 		
@@ -175,6 +155,31 @@ $utilites->echoNav(0);
     <script src="assets/js/google-code-prettify/prettify.js"></script>
 
     <script src="assets/js/application.js"></script>
+	
+	
+
+	
+  			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
+			  <script src="chosen/chosen.jquery.js" type="text/javascript"></script>
+  <script src="chosen/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
+  
+  
+  <script>
+  
+  var script = "scripts/AjaxHandlerRep.php";
+  
+
+  
+
+  
+  </script>
+  
+  
+  
+
+	
+
+	
 
 </body>
 </html>

@@ -30,7 +30,7 @@ include_once ("scripts/Navbar.php");
 <html lang="en">
    <head>
       <meta charset="utf-8">
-      <title>Messages</title>
+      <title>Purchases</title>
       <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -87,7 +87,7 @@ include_once ("scripts/Navbar.php");
     ================================================== -->
 	<?php
 	
-	$navbar = new Navbar($id,4);
+	$navbar = new Navbar($id,5);
 	$navbar->echoNav();
 	
 	?>
@@ -100,41 +100,256 @@ include_once ("scripts/Navbar.php");
 		
 		
 		
-		<div class="span3 bs-docs-sidebar" style="margin-top: 20px; ">
-        <ul class="nav nav-list bs-docs-sidenav affix-top" style="overflow-y: scroll; height: 428px;">
-    
-		<?php
-		
-		$utilites->buildChatSelector();
-		
-		?>
-		
-        </ul>
-		<button class = "btn btn-large btn-primary" id = "newmessage" style = "" href="#newmessagemodal" data-toggle="modal">New Message </button>
-      </div>
-		
-			<div class="span7">
+			<div class="span7 offset2">
 			
+			<section>
 			
+			<div class="page-header">
+            <h1>Top Selling Items</h1>
+			</div>
 			
-			<section id="messages" style=" height: 700px; overflow-y: scroll">
+			<?php
+			
+			$bestres = '<table class="table table-striped table-hover">
+              <thead>
+                <tr>
+				  <th>Thumbnail</th>
+				  <th>Item Name</th>
+				  <th>Company</th>
+				  <th>Price</th>
+				  <th>Amount Sold </th>
+                </tr>
+              </thead>
+              <tbody>';
+			  
+				$result = $utilites->getTopSellingItems();
+			  
+					while($row = $result->fetch_assoc())
+					{
+							
 
+							
+							$im = file_get_contents($row['imgloc']);
+							$imdata = base64_encode($im);    
+							
+							
+							
+							$cost = $row['unitprice'];
+							
+							
+							$formatter = new \NumberFormatter('en_US',  \NumberFormatter::CURRENCY);
+							$cost =  $formatter->formatCurrency($cost, 'USD') . PHP_EOL;
+							
+							
+					
+						  $bestres .= '<tr>
+						  <td><img class="media-object" alt="90x90" src="data:image/png;base64,'.$imdata.'" style="width: 120px; height: 90px;"></td>
+						  <td>'.$row['itemname'].'</td>
+						  <td>'.$row['company'].'</td>
+						  <td>'.$cost.'</td>
+						  <td>'.$row['AmountSold'].'</td>
+						  </tr>';
+					}
 		
+		$bestres .= '</tbody> </table>';
 			
 			
+			echo $bestres;
+			  
+			  
+			
+			?>
+			
+			</section>
+			
+			<section>
+			
+			<div class="page-header">
+            <h1>Items Like Your Past Purchases</h1>
+			</div>
+			
+			<?php
+			
+			$sugres = '<table class="table table-striped table-hover">
+              <thead>
+                <tr>
+				  <th>Thumbnail</th>
+				  <th>Item Name</th>
+				  <th>Company</th>
+				  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody>';
+			
+			$result = $utilites->generateSuggestionList();
+			
+			while($row = $result->fetch_assoc())
+			{
+			
+				$path = $row['imgloc'];
+
+				
+				$im = file_get_contents($path);
+				$imdata = base64_encode($im);    
+				
+				$cost = $row['unitprice'];
+				
+				
+				$formatter = new \NumberFormatter('en_US',  \NumberFormatter::CURRENCY);
+				$cost =  $formatter->formatCurrency($cost, 'USD') . PHP_EOL;
+				
+				  $sugres .= '<tr>
+						  <td><img class="media-object" alt="90x90" src="data:image/png;base64,'.$imdata.'" style="width: 120px; height: 90px;"></td>
+						  <td>'.$row['itemname'].'</td>
+						  <td>'.$row['company'].'</td>
+						  <td>'.$cost.'</td>
+						  </tr>';
+			
+			}
+			
+			$sugres .= '</tbody> </table>';
+			
+			
+			echo $sugres;
+			
+			?>
+			
+			</section>
+			
+			<section>
+			
+			<div class="page-header">
+            <h1>Recommended To You By Our Staff</h1>
+			</div>
+			
+			<?php
+			
+				$repres = '<table class="table table-striped table-hover">
+              <thead>
+                <tr>
+				  <th>Thumbnail</th>
+				  <th>Item Name</th>
+				  <th>Company</th>
+				  <th>Price</th>
+				  <th>Suggested By</th>
+                </tr>
+              </thead>
+              <tbody>';
+			  
+			  $result = $utilites->getSuggestedItems();
+			  
+			  while($sugrow = $result->fetch_assoc())
+			{
+				$row = $utilites->getAdvertisementRow($sugrow['advfkey']);
+				$path = $row['imgloc'];
+
+				
+				$im = file_get_contents($path);
+				$imdata = base64_encode($im);    
+				
+				$cost = $row['unitprice'];
+				
+				$reprow = $utilites->getRepRow($sugrow['rep_idrep']);
+				
+				$name = $reprow['firstname'];
+				$name .= " ";
+				$name .= $reprow['lastname'];
+				
+				
+				$formatter = new \NumberFormatter('en_US',  \NumberFormatter::CURRENCY);
+				$cost =  $formatter->formatCurrency($cost, 'USD') . PHP_EOL;
+				
+				  $repres .= '<tr>
+						  <td><img class="media-object" alt="90x90" src="data:image/png;base64,'.$imdata.'" style="width: 120px; height: 90px;"></td>
+						  <td>'.$row['itemname'].'</td>
+						  <td>'.$row['company'].'</td>
+						  <td>'.$cost.'</td>
+						  <td>'.$name.'</td>
+						  </tr>';
+			
+			}
+			  $repres .= '</tbody> </table>';
+			  echo $repres;
+			
+			
+			?>
+			
+			
+			</section>
+			
+			<section>
+			<div class="page-header">
+            <h1>Purchases</h1>
+			</div>
+			
+			<?php
+			
+			date_default_timezone_set('America/New_York');
+		setlocale(LC_MONETARY, 'en_US');
+	
 		
+		$result = $utilites->getTransactionOfCustomer();
+		
+		$htmlres = '<table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>Transaction #</th>
+                  <th>Time Stamp</th>
+				  <th>Thumbnail</th>
+				  <th>Company</th>
+				  <th>Item Name</th>
+				  <th>Amount Purchased</th>
+				  <th>Total Cost</th>
+                </tr>
+              </thead>
+              <tbody>';
+
+			  
+			  
+			  
+		
+		
+		while($row = $result->fetch_assoc())
+		{
+				$advertisementrow = $utilites->getAdvertisementRow($row['advertisementfkey']);
+				
+				$path = $advertisementrow['imgloc'];
+
+				
+				$im = file_get_contents($path);
+				$imdata = base64_encode($im);    
+				
+				
+				
+				$cost = $row['amtpurchased'] * $advertisementrow['unitprice'];
+				
+				
+				$formatter = new \NumberFormatter('en_US',  \NumberFormatter::CURRENCY);
+				$cost =  $formatter->formatCurrency($cost, 'USD') . PHP_EOL;
+				
+				
+		
+			  $htmlres .= '<tr>
+			  <td>'.$row['idtransaction'].'</td>
+			  <td>'.date('h:i a m/d/Y', strtotime($row['timestamp'])).'</td>
+			  <td><img class="media-object" alt="90x90" src="data:image/png;base64,'.$imdata.'" style="width: 120px; height: 90px;"></td>
+			  <td>'.$advertisementrow['itemname'].'</td>
+			  <td>'.$advertisementrow['company'].'</td>
+			  <td>'.$row['amtpurchased'].'</td>
+			  <td>'.$cost.'</td>
+			  </tr>';
+		}
+		
+		$htmlres .= '</tbody> </table>';
+			
+			
+			echo $htmlres;
+			
+			?>
+
+			
 			</section>
 		
-		<section style = "margin-top: 0px;">
-		<form id="sendmessage">
-		  <fieldset>
-		  
-			
-			<textarea rows="4" cols="50" style = "width: 95%; resize: none;" name="messagetext" placeholder="Write back..." required></textarea>
-			<button type="submit" class="btn">Submit</button>
-		  </fieldset>
-		</form>
-		</section>
 		
 		
 		
@@ -144,59 +359,13 @@ include_once ("scripts/Navbar.php");
 		
    </div>
    
-   
-  <div id="newmessagemodal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="myModalLabel">New Message</h3>
-  </div>
-  
-  <div class="modal-body">
-  
-    <form id = "newmessageform">
-	<fieldset>
-	 <select name = "customerselect" required>
-            <option value="" disabled>Select A Member</option>
-			
-			<?php
-			
-				$result = $utilites->getAllCustomer();
-				
-				while($row = $result->fetch_assoc())
-				{
-					if($row['idcustomer'] != $id)
-					{
-						echo '<option value="'.$row['idcustomer'].'" >'.$row['firstname'].' '.$row['lastname'].'</option>';
-					}
-				}
-			
-			?>
-			
-     </select>
-	 
-	 <textarea rows="4" cols="50" style = "width: 95%; resize: none;" name="newmessagetext" placeholder="Write a Message..." required></textarea>
-	  <button class="btn btn-primary" type="submit" id="sendmsgmodal">Send</button>
-	  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-	</fieldset>
-	</form>
- 
-  </div>
-
-     
-  
-  <div class="modal-footer">
-   
-
-
-  </div>
-</div>
-   
     <?php
   
 	$utilites->buildAdvertisementModal(1);
   
-  ?>
+	?>
 
+   
    
     <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
     <script src="assets/js/jquery.js"></script>
@@ -224,57 +393,11 @@ include_once ("scripts/Navbar.php");
 
 	
 	var script = "scripts/AjaxHandler.php";
-	var currentthread = -1;
-	
-	$(".messagethread").click(function(e){
-		
-		var id = $(e.target).attr("id");
-		id = id.replace("mthread", "");
-		currentthread = id;
-		
-		var uid = <?php  echo $id;  ?>;
-		var action = 15;
-		
-		$("#messages").html("");
-		
-		var darray = new Array(action,id,uid);
-		
-		$.ajax({
-				type: "POST",
-				url: script,
-				dataType: "json",
-				data: {data:darray},
-				success: function(msg){
-					
-					
-					$("#messages").html(msg.html);
-					//location.reload();
-					
-				},
-				error: function(msg) {
-					var y;
-				}
-				
-			});
-		
-		
-	
-	});
-	
-	
 	
 	
 	$("#namecircleinput").click(function(e) {
 			
 			e.stopPropagation();
-	});
-	
-	$(".acceptjoinrequest").click(function(e) {
-	
-	});
-	
-	$(".declinejoinrequest").click(function(e) {
-	
 	});
 	
 	$(".acceptcircleinv").click(function(e){
@@ -331,62 +454,6 @@ include_once ("scripts/Navbar.php");
 	 
 	 });
 	 
-	 $(".acceptjoinrequest").click(function(e) {
-	 
-		var nid = $(e.target).attr("id");
-		var uid = <?php  echo $id;  ?>;
-		var action = 23;
-		
-		var darray = new Array(action,nid,uid);
-		
-		$.ajax({
-				type: "POST",
-				url: script,
-				dataType: "json",
-				data: {data:darray},
-				success: function(msg){
-					
-					location.reload();
-					
-				},
-				error: function(msg) {
-					var y;
-				}
-				
-			});
-		
-		
-	 
-	 });
-	 
-	 $(".declinejoinrequest").click(function(e) {
-	 
-		var nid = $(e.target).attr("id");
-		var uid = <?php  echo $id;  ?>;
-		var action = 24;
-		
-		var darray = new Array(action,nid,uid);
-		
-		$.ajax({
-				type: "POST",
-				url: script,
-				dataType: "json",
-				data: {data:darray},
-				success: function(msg){
-					
-					location.reload();
-					
-				},
-				error: function(msg) {
-					var y;
-				}
-				
-			});
-		
-		
-	 
-	 });
-	 
 	 $("#createcircle").submit(function(e){
 	 
 		e.preventDefault();
@@ -417,104 +484,9 @@ include_once ("scripts/Navbar.php");
 	 
 	 });
 	 
-	  $("#newmessageform").submit(function(e) {
-	 
-		e.preventDefault();
-		
-		var messagecontent = $("[name='newmessagetext'").val();
-		var uid = <?php  echo $id;  ?>;
-		var rid = $("[name='customerselect'").val();
-		var action = 16;
-		
-		var darray = new Array(action,messagecontent,rid,uid);
-		
-			
-			$.ajax({
-				type: "POST",
-				url: script,
-				dataType: "json",
-				data: {data:darray},
-				success: function(msg){
-					
-					location.reload();
-					
-				},
-				error: function(msg) {
-					var y;
-				}
-				
-			});
-	 
-	 });
 	 
 
-	 
-
-	 
-	 $("#sendmessage").submit(function(e){
-	 
-		e.preventDefault();
-		
-		if(currentthread == -1)
-			return;
-		
-		var messagecontent = $("[name='messagetext'").val();
-		var uid = <?php  echo $id;  ?>;
-		var rid = currentthread;
-		var action = 16;
-		
-		var darray = new Array(action,messagecontent,rid,uid);
-		
-			
-			$.ajax({
-				type: "POST",
-				url: script,
-				dataType: "json",
-				data: {data:darray},
-				success: function(msg){
-					
-					location.reload();
-					
-				},
-				error: function(msg) {
-					var y;
-				}
-				
-			});
-	 
-	 });
-	 
-	 function deleteMessage(id)
-	 {
-		var action = 17;
-		var uid = <?php  echo $id;  ?>;
-		var darray = new Array(action,id,uid);
-		
-		$.ajax({
-				type: "POST",
-				url: script,
-				dataType: "json",
-				data: {data:darray},
-				success: function(msg){
-					
-					location.reload();
-					
-				},
-				error: function(msg) {
-					var y;
-				}
-				
-			});
-	 
-	 }
-	
-	 
-	 	 $('.carousel').carousel({
-		interval: false
-	});
-	
-	
-	window.setTimeout(showAdvertisement, 5000);
+	 	window.setTimeout(showAdvertisement, 5000);
 
 	function showAdvertisement()
 	{
@@ -633,10 +605,14 @@ include_once ("scripts/Navbar.php");
     }
     return (neg ? "-$" : '$') + parseFloat(total, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString();
 	}
+	 
+	 
+	 
+	
 	
 	</script>
 	
 	
-	
+
 	  </body>
 </html>

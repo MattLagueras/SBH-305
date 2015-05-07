@@ -31,6 +31,8 @@ ACTION CODES
 26 = Delete Circle
 27 = Add Preference
 28 = Delete Preference
+29 = Create Account
+30 = Get All Transactions
 
 
 */
@@ -362,6 +364,26 @@ error_reporting(-1);
 		echo json_encode(array('result' => 'success'));
 	}
 	
+	if($data[0] == 25)
+	{
+		$utilites = new CustomerUtilites($data[3],-1);
+		
+		$htmlres = $utilites->removeCustomerFromCircle($data[1],$data[2]);
+		
+		echo json_encode(array('result' => 'success'));
+		
+		
+	}
+	
+	if($data[0] == 26)
+	{
+		$utilites = new CustomerUtilites($data[2],-1);
+		
+		$utilites->deleteCircle($data[1]);
+		
+		echo json_encode(array('result' => 'success'));
+	}
+	
 	if($data[0] == 27)
 	{
 		$utilites = new CustomerUtilites($data[2],-1);
@@ -379,6 +401,17 @@ error_reporting(-1);
 		
 		echo json_encode(array('result' => 'success'));
 	}
+	
+	if($data[0] == 29)
+	{
+		$utilites = new CustomerUtilites($data[2],-1);
+		
+		$utilites->createAccount($data[1]);
+		
+		echo json_encode(array('result' => 'success'));
+	
+	}
+
 	
 	
 

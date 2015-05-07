@@ -67,7 +67,7 @@ class CustomerUtilites
       <div class="navbar-inner">
 		 <div class = "row-fluid" >
 		  <div class="span1 offset2">
-          <a class="brand" href="./index.html"><img src="assets/img/SBHlogo.jpg" width="40" height="40" ></a>
+          <a class="brand" href="./home.php"><img src="assets/img/SBHlogo.jpg" width="40" height="40" ></a>
 		  </div>
 		 <ul class="nav" style="position: relative; top: 10px;">
 		
@@ -113,11 +113,15 @@ class CustomerUtilites
                 <a href="./messages.php">Messages</a>
               </li>
               <li '; if($activetab == 5) { echo 'class="active"';}  echo'>
-                <a href="./plus.html">Purchases</a>
+                <a href="./purchases.php">Purchases</a>
               </li>
 			  
 			  <li '; if($activetab == 6) { echo 'class="active"';}  echo'>
                 <a href="./searchcircles.php">Search Circles</a>
+              </li>
+			  
+			  <li '; if($activetab == 7) { echo 'class="active"';}  echo'>
+                <a href="./custhelp.php">Help</a>
               </li>
 
             </ul>
@@ -191,6 +195,24 @@ class CustomerUtilites
 			
 			return $result->fetch_assoc();
 	
+	}
+	
+	function createAccount($creditcard)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			date_default_timezone_set('America/New_York');
+		
+			$date = date('Y-m-d', time());
+			
+			$params = array("isi",$creditcard,$date,$this->uid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"INSERT INTO account (creditcardnum,accountcdate,customer_idcustomer) VALUES (?,?,?)",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
 	}
 	
 	function getTransactionOfAccount($accid)
@@ -386,6 +408,118 @@ class CustomerUtilites
 			
 	}
 	
+	function generateSuggestionList()
+	{
+	
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$params = array("ii",$this->uid,$this->uid);
+			
+			
+		$this->queryhelper->beginTransaction($mysqli);
+	
+		$result = $this->queryhelper->executeStatement($mysqli,"SELECT a.* from advertisement a
+																WHERE
+																a.itemname IN (SELECT itemname FROM transaction,account,customer,advertisement a2
+																WHERE a2.typefkey IN (SELECT typefkey FROM transaction,account,customer,advertisement
+																WHERE transaction.accountfkey = account.idaccount
+																AND 
+																account.customer_idcustomer = customer.idcustomer
+																AND
+																transaction.advertisementfkey = advertisement.idadvertisement
+																AND
+																customer.idcustomer = ?) AND a.itemname NOT IN (
+																SELECT itemname FROM transaction,account,customer,advertisement
+																WHERE transaction.accountfkey = account.idaccount
+																AND 
+																account.customer_idcustomer = customer.idcustomer
+																AND
+																transaction.advertisementfkey = advertisement.idadvertisement
+																AND
+																customer.idcustomer = ?) )",$params);
+																
+		$this->queryhelper->commitTransaction($mysqli);			
+
+		return $result;		
+
+	
+	}
+	
+	function getSuggestedItems()
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$params = array("i",$this->uid);
+		
+		$this->queryhelper->beginTransaction($mysqli);
+	
+		$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM suggestionlist WHERE customer_idcustomer = ?",$params);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		return $result;
+		
+	}
+	
+	function getRepRow($repid)
+	{
+		$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			$params = array("i",$repid);
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM customerrep WHERE idcustomerrep = ?",$params);
+			
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result->fetch_assoc();
+	}
+	
+	function getTopSellingItems()
+	{
+	
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			
+			$this->queryhelper->beginTransaction($mysqli);
+			
+			$result = $mysqli->query("SELECT SUM(t.amtpurchased) AS AmountSold, a.itemname, a.company, a.content, a.unitprice, a.imgloc FROM advertisement a, transaction t
+									  WHERE
+									  t.advertisementfkey = a.idadvertisement
+									  GROUP BY(t.advertisementfkey)
+									  ORDER BY AmountSold DESC LIMIT 5");
+												 
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $result;
+	
+	}
+	
+	function getTransactionOfCustomer()
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$params = array("i",$this->uid);
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$result = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM transaction t
+																INNER JOIN account ON
+																account.idaccount = t.accountfkey
+																WHERE account.customer_idcustomer = ? ORDER BY t.timestamp DESC",$params);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+		
+		return $result;
+		
+	}
+	
 	function getItemsLeft($itemid)
 	{
 			$con = DBcon::getDBcon();
@@ -508,10 +642,7 @@ class CustomerUtilites
 	
 	}
 	
-	function createAccount()
-	{
-	
-	}
+
 	
 	function getCirclesOfCustomer()
 	{
@@ -684,6 +815,28 @@ class CustomerUtilites
 			
 			$row = $res1->fetch_assoc();
 			return $row['idpage'];
+	}
+	
+	function getCircleOfPage($pageid, $trans)
+	{
+			$con = DBcon::getDBcon();
+			$mysqli = $con->getMysqliObject();
+			
+			if($trans == true)
+			$this->queryhelper->beginTransaction($mysqli);
+		
+			$p1 = array("i",$pageid);
+			$res1 = $this->queryhelper->executeStatement($mysqli,"SELECT fkcircle FROM pages WHERE idpage = ? ",$p1);
+			$row1 = $res1->fetch_assoc();
+			
+			$p2 = array("i",$row1['fkcircle']);
+			$res2 = $this->queryhelper->executeStatement($mysqli,"SELECT * FROM circle WHERE idcircle = ? ",$p2);
+			$row2 = $res2->fetch_assoc();
+			
+			if($trans == true)
+			$this->queryhelper->commitTransaction($mysqli);
+			
+			return $row2;
 	}
 	
 	function removeCustomerFromCircle($circleid,$custid)
@@ -935,9 +1088,9 @@ class CustomerUtilites
 			   <div class="card-bottom">';
 				  if($this->uid != $row['idcustomer'])
 					{
-				      echo '<button class="btn btn-small" href="#newmessagemodal" data-toggle="modal" onclick="newmessage('.$row['idcustomer'].')">Message</button>';
+				      $card.= '<button class="btn btn-small" href="#newmessagemodal" data-toggle="modal" onclick="newmessage('.$row['idcustomer'].')">Message</button>';
 				    }
-					echo '
+					$card.= '
 				  </div>
 			</div>';
 			
@@ -1095,10 +1248,25 @@ class CustomerUtilites
 	
 	}
 	
+	function deleteCircle($circleid)
+	{
+		$con = DBcon::getDBcon();
+		$mysqli = $con->getMysqliObject();
+		
+		$params1 = array("i",$circleid);
+		
+		$this->queryhelper->beginTransaction($mysqli);
+		
+		$result =  $this->queryhelper->executeStatement($mysqli,"DELETE FROM circle WHERE idcircle = ?",$params1);
+		
+		$this->queryhelper->commitTransaction($mysqli);
+	
+	}
+	
 	function echoNotifications($custid)
 	{
 	
-		/*type1: circle invitation*/
+	
 	
 		$con = DBcon::getDBcon();
 		$mysqli = $con->getMysqliObject();
@@ -1678,13 +1846,21 @@ class CustomerUtilites
 					  
 					
 					   $commentcount = mysqli_num_rows($result2);
+					   
+					     $ownderid = -1;
+					   
+					   if($row['fkpage'] != null)
+					   {
+					   $circlerow = $this->getCircleOfPage($row['fkpage'],true);
+					   $ownderid = $circlerow['customer_idcustomer'];
+					   }
 				
 				
 						echo ' <div class="span6">
 						<div class="card">
 					   <div class="card-heading image">';
 					   
-					   if($row["customer_idcustomer"] == $this->uid)
+					   if($row["customer_idcustomer"] == $this->uid )
 					   {
 					   echo '
 					   <div class="dropdown" style="display:inline; position: relative; float: right; top:-10px">
@@ -1695,6 +1871,9 @@ class CustomerUtilites
                       </ul>
 						</div>';
 					   }
+					   
+					   
+					   
 					   echo'
 						  <img src="holder.js/46x46" alt=""/>
 						  <div class="card-heading-header">
@@ -1704,7 +1883,10 @@ class CustomerUtilites
 					   </div>
 					   <div class="card-body" id="post'.$row['idposts'].'body">';
 					   
-					   if($row["customer_idcustomer"] == $this->uid)
+					
+					   
+					   
+					   if($row["customer_idcustomer"] == $this->uid ) // delete drop down
 					   {
 					   echo '<div class="card-body" id = "'.$row['idposts'].'formdiv" style="display: none"> <form class="editpostform"><fieldset><textarea rows="4" cols="50" style = "width: 95%; resize: none;" name="editstatus" required>'.$row['contenttext'].'</textarea><button type="submit" class="btn-primary">Submit</button><button type="button" onclick="hideEditPost('.$row['idposts'].',post'.$row['idposts'].'body)" class="btn-warning">Cancel</button></fieldset></form></div>';
 					   }
@@ -1802,7 +1984,7 @@ class CustomerUtilites
 								
 								 		   <h4 class="media-heading">'.$row2['firstname'].' '.$row2['lastname'].'</h4>';
 										   
-										   if($row2['customer_idcustomer'] == $this->uid)
+										   if($row2['customer_idcustomer'] == $this->uid) // delete/edit comment dropdown
 										   {
 										   echo '
 										    <i style = "display:inline; position: relative; float: right; top:-20px" class="icon-remove removecomment" href="#deleteCommentModal" data-toggle="modal" onclick = "setDeleteComment('.$row2['idcomment'].')" ></i>

@@ -30,15 +30,15 @@ include_once ("scripts/Navbar.php");
 <html lang="en">
    <head>
       <meta charset="utf-8">
-      <title>Home</title>
+      <title>Accounts</title>
       <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
       <meta name="description" content="Bootplus : Sleek, intuitive, and powerful Google styled front-end framework for faster and easier web development" />
       <meta name="keywords" content="bootplus, google plus, google+, plus, bootstrap, framework, web framework, css3, html5" />
-      <meta name="author" content="AozoraLabs by Marcello Palmitessa"/>
-      <link rel="publisher" href="https://plus.google.com/117689250782136016574">
+      
+      
 
       <!-- Le styles -->
       <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,700' rel='stylesheet' type='text/css'>
@@ -71,7 +71,7 @@ include_once ("scripts/Navbar.php");
       <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
       <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
                     <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
-                                   <link rel="shortcut icon" href="assets/ico/favicon.png">
+                                   <link rel="shortcut icon" href="assets/ico/SBHlogo.jpg">
 								   
 
 	
@@ -107,7 +107,7 @@ include_once ("scripts/Navbar.php");
 			<section>
 			<div class="page-header">
             <h1>My Accounts</h1>
-			<button class = "btn btn-primary">Create New</button>
+			<button class = "btn btn-primary" href="#createaccount" data-toggle="modal">Create New</button>
 			</div>
 			
 			 <table class="table table-striped table-hover">
@@ -154,6 +154,41 @@ include_once ("scripts/Navbar.php");
 		</div>
 		
    </div>
+   
+   
+        <div id="createaccount" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Create Account</h3>
+  </div>
+  
+  <div class="modal-body">
+  
+	<div class="span5">
+	
+	<form id="createaccform">
+	<fieldset>
+	<label>Enter Credit Card Number</label>
+	<input name = "creditcard" type = "text" pattern = "\d{16}" required placeholder="Enter 16 digits, no spaces or dashes"><br>
+	<button class="btn btn-primary" type="submit">Create</button>
+	<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+	
+	</fieldset>
+	</form>
+	
+ 
+	</div>
+
+	</div>
+     
+  
+  <div class="modal-footer">
+
+    
+
+  </div>
+
+</div>
    
      <div id="purchasehistory" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style = "width: 700px">
   <div class="modal-header">
@@ -444,7 +479,32 @@ include_once ("scripts/Navbar.php");
 	});
 	
 
+	$("#createaccform").submit(function(e) {
 
+		  e.preventDefault();
+		  
+		  var cc = $("[name='creditcard'").val();
+	
+		  var darray = new Array(29,cc,<?php  echo $id;  ?>);
+		  
+		  
+		   $.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: {data:darray},
+				success: function(msg){
+					
+					location.reload();
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
+	
+	});
 	
 	
 	$("[name='qtyenter'").change(function(e) {

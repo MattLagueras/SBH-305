@@ -32,15 +32,15 @@ include_once ("scripts/RepUtilites.php");
 <html lang="en">
    <head>
       <meta charset="utf-8">
-      <title>Home</title>
+      <title>Advertisements</title>
       <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
       <meta name="description" content="Bootplus : Sleek, intuitive, and powerful Google styled front-end framework for faster and easier web development" />
       <meta name="keywords" content="bootplus, google plus, google+, plus, bootstrap, framework, web framework, css3, html5" />
-      <meta name="author" content="AozoraLabs by Marcello Palmitessa"/>
-      <link rel="publisher" href="https://plus.google.com/117689250782136016574">
+      
+      
 
       <!-- Le styles -->
       <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,700' rel='stylesheet' type='text/css'>
@@ -73,7 +73,7 @@ include_once ("scripts/RepUtilites.php");
       <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
       <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
                     <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
-                                   <link rel="shortcut icon" href="assets/ico/favicon.png">
+                                   <link rel="shortcut icon" href="assets/ico/SBHlogo.jpg">
 								   
 
 	
@@ -98,7 +98,7 @@ $utilites->echoNav(1);
 
 		<div class="row">
 		
-		<div class="span6">
+		<div class="span6 offset2">
 			
 			
 			
@@ -153,20 +153,31 @@ $utilites->echoNav(1);
 		
 			</section>
 			
-		</div>
-		
-		<div class="span6">
-			
-			
-			
 			<section id="advedit">
 
 			<div class="page-header">
-            <h1>Edit and Delete Advertisement</h1>
+            <h1>Delete Advertisement</h1>
 			</div>
 			
-			<form id="editdeleteadv">
+			<form id="deleteadv">
 			
+			<select name = "advselect">
+			
+			<?php 
+			
+				$result = $utilites->getAdvertisements();
+				
+				while($row = $result->fetch_assoc())
+					{
+						echo '<option value="'.$row['idadvertisement'].'" >'.$row['itemname'].'</option>';
+					}
+			
+			?>
+			
+			
+			</select><br>
+			
+			<button type="submit" class="btn btn-danger">Delete</button>
 			
 			
 			</form>
@@ -176,6 +187,8 @@ $utilites->echoNav(1);
 			</section>
 			
 		</div>
+		
+	
 		
 		
 		
@@ -253,6 +266,41 @@ $utilites->echoNav(1);
 			});
 	
 	
+	
+	});
+	
+	
+	$("#deleteadv").submit(function(e) {
+	
+		e.preventDefault();
+		
+		
+		var formData = new FormData();
+		
+		formData.append("action",6);
+		formData.append("idadvertisement",$("[name='advselect'").val());
+		formData.append("uid",<?php echo $id; ?>);
+		
+		
+		$.ajax({
+				type: "POST",
+				url: script,
+				dataType: "json",
+				data: formData,
+				cache: false,
+				processData: false, 
+				contentType: false,
+				success: function(msg)
+				{
+					location.reload();
+
+					
+				},
+				error: function(msg) {
+					var y;
+				}
+				
+			});
 	
 	});
 	
